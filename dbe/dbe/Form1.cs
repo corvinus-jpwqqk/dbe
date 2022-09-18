@@ -18,29 +18,6 @@ namespace dbe
         public Form1()
         {
             InitializeComponent();
-            //Console.WriteLine("Password: ");
-            //string pwd = Console.ReadLine();
-
-
-            //string server = "bit.uni-corvinus.hu";
-            //string uname = "hallgato";
-            //string database = "szallashely";
-            //SqlCommand cmd;
-            //using (SqlConnection conn = new SqlConnection())
-            //{
-            //    conn.ConnectionString = "Server=" + server + ";Database=" + database + ";Uid=" + uname + ";Password=" + pwd;
-            //    try
-            //    {
-            //        conn.Open();
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine("Error while connecting: ");
-            //        Console.WriteLine(ex.Message);
-            //        Console.ReadKey();
-            //        return;
-            //    }
-            //}
         }
         protected override void OnLoad(EventArgs e)
         {
