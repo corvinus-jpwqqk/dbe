@@ -44,7 +44,6 @@ namespace dbe
             // 
             // btnOK
             // 
-            this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnOK.Location = new System.Drawing.Point(56, 352);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 35);
@@ -79,6 +78,7 @@ namespace dbe
             this.tbSrv.Name = "tbSrv";
             this.tbSrv.Size = new System.Drawing.Size(287, 22);
             this.tbSrv.TabIndex = 3;
+            this.tbSrv.Text = "bit.uni-corvinus.hu";
             // 
             // tbUsr
             // 
@@ -86,6 +86,7 @@ namespace dbe
             this.tbUsr.Name = "tbUsr";
             this.tbUsr.Size = new System.Drawing.Size(287, 22);
             this.tbUsr.TabIndex = 4;
+            this.tbUsr.Text = "hallgato";
             // 
             // lblSrv
             // 

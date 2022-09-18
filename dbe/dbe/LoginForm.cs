@@ -44,7 +44,7 @@ namespace dbe
                     return;
                 }
 
-                using (SqlCommand cmd = new SqlCommand("SELECT name FROM sys.databases", con))
+                using (SqlCommand cmd = new SqlCommand("SELECT name FROM sys.databases WHERE owner_sid <> 0x01", con))
                 {
                     using (IDataReader rdr = cmd.ExecuteReader())
                     {
@@ -55,6 +55,9 @@ namespace dbe
                     }
                 }
             }
+            tbSrv.Enabled = false;
+            tbUsr.Enabled = false;
+            tbPwd.Enabled = false;
             cbDb.Enabled = true;
             cbDb.DataSource = this.databases;
             btnOK.Enabled = true;
@@ -63,6 +66,19 @@ namespace dbe
         private void btnOK_Click(object sender, EventArgs e)
         {
             this.connString += ";Database=" + cbDb.SelectedItem.ToString();
+            using (SqlConnection con = new SqlConnection())
+            {
+                con.ConnectionString = this.connString;
+                try
+                {
+                    con.Open();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error while connecting: " + ex.Message);
+                    return;
+                }
+            }
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
