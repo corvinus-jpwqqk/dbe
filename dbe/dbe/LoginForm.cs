@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,9 +22,26 @@ namespace dbe
             InitializeComponent();
             btnOK.Enabled = false;
             cbDb.Enabled = false;
+            this.KeyPress += LoginForm_KeyPress;
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        private void LoginForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // TODO: fix detecting keypress
+            if (e.KeyChar == (char)13)
+            {
+                if (btnLogin.Enabled)
+                {
+                    login();
+                }
+                else if (btnOK.Enabled)
+                {
+                    connect();
+                }
+            }
+        }
+
+        private void login()
         {
             string serverAddr = tbSrv.Text;
             string userName = tbUsr.Text;
@@ -62,25 +80,36 @@ namespace dbe
             cbDb.DataSource = this.databases;
             btnOK.Enabled = true;
         }
-
-        private void btnOK_Click(object sender, EventArgs e)
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            login();
+        }
+        private void connect()
         {
             this.connString += ";Database=" + cbDb.SelectedItem.ToString();
             using (SqlConnection con = new SqlConnection())
             {
+                Cursor.Current = Cursors.WaitCursor;
                 con.ConnectionString = this.connString;
                 try
                 {
                     con.Open();
+                    Cursor.Current = Cursors.Default;
                 }
                 catch (Exception ex)
                 {
+                    Cursor.Current = Cursors.Default;
                     MessageBox.Show("Error while connecting: " + ex.Message);
                     return;
                 }
             }
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        private void btnOK_Click(object sender, EventArgs e)
+        {
+            connect();
         }
     }
 }

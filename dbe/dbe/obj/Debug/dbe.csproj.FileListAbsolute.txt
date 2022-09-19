@@ -9,3 +9,15 @@ C:\Users\Matyo\Desktop\dbe\dbe\dbe\obj\Debug\dbe.csproj.CoreCompileInputs.cache
 C:\Users\Matyo\Desktop\dbe\dbe\dbe\obj\Debug\dbe.exe
 C:\Users\Matyo\Desktop\dbe\dbe\dbe\obj\Debug\dbe.pdb
 C:\Users\Matyo\Desktop\dbe\dbe\dbe\obj\Debug\dbe.LoginForm.resources
+C:\Users\Nox\Desktop\dbe\dbe\dbe\obj\Debug\dbe.csproj.AssemblyReference.cache
+C:\Users\Nox\Desktop\dbe\dbe\dbe\obj\Debug\dbe.csproj.SuggestedBindingRedirects.cache
+C:\Users\Nox\Desktop\dbe\dbe\dbe\obj\Debug\dbe.Form1.resources
+C:\Users\Nox\Desktop\dbe\dbe\dbe\obj\Debug\dbe.LoginForm.resources
+C:\Users\Nox\Desktop\dbe\dbe\dbe\obj\Debug\dbe.Properties.Resources.resources
+C:\Users\Nox\Desktop\dbe\dbe\dbe\obj\Debug\dbe.csproj.GenerateResource.cache
+C:\Users\Nox\Desktop\dbe\dbe\dbe\obj\Debug\dbe.csproj.CoreCompileInputs.cache
+C:\Users\Nox\Desktop\dbe\dbe\dbe\obj\Debug\dbe.exe
+C:\Users\Nox\Desktop\dbe\dbe\dbe\obj\Debug\dbe.pdb
+C:\Users\Nox\Desktop\dbe\dbe\dbe\bin\Debug\dbe.exe.config
+C:\Users\Nox\Desktop\dbe\dbe\dbe\bin\Debug\dbe.exe
+C:\Users\Nox\Desktop\dbe\dbe\dbe\bin\Debug\dbe.pdb
