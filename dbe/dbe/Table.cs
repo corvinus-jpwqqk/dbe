@@ -65,7 +65,6 @@ namespace dbe
                 }
             }
         }
-        public int getId() {return this.id;}
         public string Name
         {
             get { return this.name; }
