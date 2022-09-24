@@ -31,6 +31,9 @@ namespace dbe
         {
             this.lbTbl = new System.Windows.Forms.ListBox();
             this.dgvPos = new System.Windows.Forms.DataGridView();
+            this.button1 = new System.Windows.Forms.Button();
+            this.txtHun = new System.Windows.Forms.TextBox();
+            this.txtSql = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPos)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,18 +51,45 @@ namespace dbe
             // dgvPos
             // 
             this.dgvPos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPos.Location = new System.Drawing.Point(144, 16);
+            this.dgvPos.Location = new System.Drawing.Point(153, 16);
             this.dgvPos.Name = "dgvPos";
             this.dgvPos.RowHeadersWidth = 62;
             this.dgvPos.RowTemplate.Height = 28;
             this.dgvPos.Size = new System.Drawing.Size(918, 284);
             this.dgvPos.TabIndex = 1;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(15, 327);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(159, 44);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "generate exercise 1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // txtHun
+            // 
+            this.txtHun.Location = new System.Drawing.Point(180, 327);
+            this.txtHun.Name = "txtHun";
+            this.txtHun.Size = new System.Drawing.Size(882, 26);
+            this.txtHun.TabIndex = 3;
+            // 
+            // txtSql
+            // 
+            this.txtSql.Location = new System.Drawing.Point(180, 359);
+            this.txtSql.Name = "txtSql";
+            this.txtSql.Size = new System.Drawing.Size(882, 26);
+            this.txtSql.TabIndex = 4;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1074, 699);
+            this.Controls.Add(this.txtSql);
+            this.Controls.Add(this.txtHun);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.dgvPos);
             this.Controls.Add(this.lbTbl);
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -67,6 +97,7 @@ namespace dbe
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.dgvPos)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -74,6 +105,9 @@ namespace dbe
 
         private System.Windows.Forms.ListBox lbTbl;
         private System.Windows.Forms.DataGridView dgvPos;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox txtHun;
+        private System.Windows.Forms.TextBox txtSql;
     }
 }
 

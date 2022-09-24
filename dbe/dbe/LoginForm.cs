@@ -50,14 +50,17 @@ namespace dbe
             Console.WriteLine("Connecting to server with: " + this.connString);
             using (SqlConnection con = new SqlConnection())
             {
+                Cursor.Current = Cursors.WaitCursor;
                 con.ConnectionString = this.connString;
                 try
                 {
                     con.Open();
                     btnLogin.Enabled = false;
+                    Cursor.Current = Cursors.Default;
                 }
                 catch (Exception ex)
                 {
+                    Cursor.Current = Cursors.Default;
                     MessageBox.Show("Error while connecting: " + ex.Message);
                     return;
                 }

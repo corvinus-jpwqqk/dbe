@@ -5,12 +5,20 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace dbe
 {
+    enum DataTypeCategory
+    {
+        Numeric,
+        String,
+        Date,
+        Unhandled
+    }
     public partial class Form1 : Form
     {
         string connectionString;
@@ -61,7 +69,7 @@ namespace dbe
             }
             foreach(Table table in this.tables)
             {
-                table.fetchColumns(con);
+                table.fetchColumns(ref con);
             }
             lbTbl.DataSource = this.tables;
             lbTbl.DisplayMember = "Name";
@@ -71,29 +79,47 @@ namespace dbe
         {
             foreach (Table table in this.tables)
             {
-                table.getDataTypeNames(con);
+                table.getDataTypeNames(ref con);
             }
         }
         private void fillDgv()
         {
             string tableName = ((Table)(this.lbTbl.SelectedItem)).Name;
-            dgvPos.DataSource = this.tables;
-            //TODO set datasource to selected table columns
+            
 
-            //foreach (Table table in this.tables)
-            //{
-            //    if(table.Name == tableName)
-            //    {
-            //        BindingSource bs = new BindingSource();
-            //        bs.DataSource = table.Columns;
-            //        dgvPos.DataSource = bs;
-            //    }
-            //}
+            foreach (Table table in this.tables)
+            {
+                if (table.Name == tableName)
+                {
+                    dgvPos.DataSource = table.Columns;
+                }
+            }
         }
 
         private void lbTbl_SelectedIndexChanged(object sender, EventArgs e)
         {
             fillDgv();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //testStuff();
+            Exercise ex1 = new Exercise(ref this.tables, ref this.con);
+            txtHun.Text = ex1.getExerciseHun();
+            txtSql.Text = ex1.getExerciseSql();
+        }
+        private void testStuff()
+        {
+            cmd = new SqlCommand("select MIN(ROGZ_IDO) from szallashely", con);
+            DateTime stuff = new DateTime();
+            using (IDataReader rdr = cmd.ExecuteReader())
+            {
+                while (rdr.Read())
+                {
+                    stuff = Convert.ToDateTime(rdr[0]);
+                }
+            }
+            MessageBox.Show("Date: " + stuff);
         }
     }
 }

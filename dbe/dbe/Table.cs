@@ -13,7 +13,7 @@ namespace dbe
     {
         private int id;
         private string name;
-        public List<Column> columns;
+        private List<Column> columns;
 
         public Table(int id_, string name_)
         {
@@ -22,7 +22,7 @@ namespace dbe
             this.columns = new List<Column>();
         }
 
-        public void fetchColumns(SqlConnection con)
+        public void fetchColumns(ref SqlConnection con)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace dbe
             }
         }
 
-        public void getDataTypeNames(SqlConnection con)
+        public void getDataTypeNames(ref SqlConnection con)
         {
             foreach (Column column in this.columns)
             {
