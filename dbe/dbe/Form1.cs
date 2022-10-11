@@ -25,8 +25,8 @@ namespace dbe
         List<Table> tables = new List<Table>();
         SqlConnection con;
         SqlCommand cmd;
+        List<FunctionType> functions;
 
-        
         public Form1()
         {
             InitializeComponent();
@@ -36,6 +36,7 @@ namespace dbe
         {
             con = new SqlConnection(this.connectionString);
             con.Open();
+            fillFunctions();
             getTables();
             getSystemTypes();
             fillDgv();
@@ -120,6 +121,14 @@ namespace dbe
                 }
             }
             MessageBox.Show("Date: " + stuff);
+        }
+        private void fillFunctions()
+        {
+            functions = new List<FunctionType>();
+            functions.Add(new FunctionType("LEFT", DataTypeCategory.String));
+            functions.Add(new FunctionType("RIGHT", DataTypeCategory.String));
+            functions.Add(new FunctionType("LEFT", DataTypeCategory.String));
+            functions.Add(new FunctionType("LEFT", DataTypeCategory.String));
         }
     }
 }

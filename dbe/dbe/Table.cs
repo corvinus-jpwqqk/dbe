@@ -43,6 +43,11 @@ namespace dbe
             }
         }
 
+        private void getFunctions()
+        {
+
+        }
+
         public void getDataTypeNames(ref SqlConnection con)
         {
             foreach (Column column in this.columns)

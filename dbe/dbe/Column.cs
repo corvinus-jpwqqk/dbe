@@ -55,7 +55,7 @@ namespace dbe
         {
             get { return this.name; }
         }
-        public DataTypeCategory DtCat
+        public DataTypeCategory DTC
         {
             get { return this.dtCategory;  }
         }

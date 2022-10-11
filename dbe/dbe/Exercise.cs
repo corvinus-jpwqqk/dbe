@@ -18,6 +18,9 @@ namespace dbe
         private List<Column> currentColumns;
         SqlConnection con;
         private int checkCount = 0;
+        List<FunctionType> functions;
+        List<string> functionBuilderContent;
+
 
         public Exercise(ref List<Table> tables, ref SqlConnection con)
         {
@@ -25,6 +28,7 @@ namespace dbe
             Random rnd = new Random();
             currentTable = tables[rnd.Next(tables.Count)];
             currentColumns = new List<Column>();
+            functionBuilderContent = new List<string>();
             generateExercise();
         }
 
@@ -95,16 +99,16 @@ namespace dbe
                 SqlCommand cmd;
                 try
                 {
-                    if (whereColumn.DtCat == DataTypeCategory.Unhandled) continue;
-                    else if(whereColumn.DtCat == DataTypeCategory.Date 
-                         || whereColumn.DtCat == DataTypeCategory.Numeric)
+                    if (whereColumn.DTC == DataTypeCategory.Unhandled) continue;
+                    else if(whereColumn.DTC == DataTypeCategory.Date 
+                         || whereColumn.DTC == DataTypeCategory.Numeric)
                     {
                         cmd = new SqlCommand("SELECT MIN(" + whereColumn.Name + "), MAX(" + whereColumn.Name + ") FROM " + currentTable.Name, con);
                         using (IDataReader rdr = cmd.ExecuteReader())
                         {
                             while (rdr.Read())
                             {
-                                if(whereColumn.DtCat == DataTypeCategory.Numeric)
+                                if(whereColumn.DTC == DataTypeCategory.Numeric)
                                 {
                                     minValue = Convert.ToDouble(rdr[0]);
                                     maxValue = Convert.ToDouble(rdr[1]);
@@ -126,11 +130,11 @@ namespace dbe
                 }
                 success = true;
             }
-            if(whereColumn.DtCat == DataTypeCategory.Numeric)
+            if(whereColumn.DTC == DataTypeCategory.Numeric)
             {
                 getNumericWhere(ref whereColumn, minValue, maxValue);
             }
-            else if(whereColumn.DtCat == DataTypeCategory.Date)
+            else if(whereColumn.DTC == DataTypeCategory.Date)
             {
                 getDateWhere(ref whereColumn, minDate, maxDate);
             }
@@ -243,6 +247,27 @@ namespace dbe
                     generateExercise();
                 }
                 Console.WriteLine("Checking successful, line count: " + lineCount.ToString());
+            }
+        }
+        private void functionBuilder(DataTypeCategory returnType, int depth)
+        {
+            Random rnd = new Random();
+            if (depth == 0)
+            {
+                var eligibleColumns = currentTable.Columns.Where(t => t.DTC == returnType).ToList();
+                var returnColumn = eligibleColumns[rnd.Next(eligibleColumns.Count)];
+                foreach(string s in functionBuilderContent)
+                {
+                    Console.WriteLine(s);
+                }
+                Console.WriteLine(returnColumn.Name);
+            }
+            else
+            {
+                var eligibleFunctions = functions.Where(f => f.dtc == returnType).ToList();
+                var nextFunction = eligibleFunctions[rnd.Next(eligibleFunctions.Count)];
+                functionBuilderContent.Add(nextFunction.name);
+                functionBuilder(nextFunction.dtc, depth - 1);
             }
         }
     }
