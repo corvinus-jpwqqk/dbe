@@ -13,17 +13,19 @@ namespace dbe
         private int maxLength;
         private string dataTypeName;
         private DataTypeCategory dtCategory;
+        private string tableName;
 
         public Column()
         {
 
         }
-        public Column(string name, int dataType, int maxLength)
+        public Column(string name, int dataType, int maxLength, string tableName)
         {
             this.name = name;
             this.dataType = dataType;
             this.maxLength = maxLength;
-            if(dataType == 40
+            this.tableName = tableName;
+            if (dataType == 40
             || dataType == 42)
             {
                 this.dtCategory = DataTypeCategory.Date;
@@ -58,6 +60,14 @@ namespace dbe
         public DataTypeCategory DTC
         {
             get { return this.dtCategory;  }
+        }
+        public int MaxLength
+        {
+            get { return this.maxLength; }
+        }
+        public string TableName
+        {
+            get { return this.tableName; }
         }
     }
 }

@@ -10,5 +10,18 @@ namespace dbe
     {
         private string name;
         private DataTypeCategory dataType;
+        public FunctionParameter(DataTypeCategory dataType, string name)
+        {
+            this.dataType = dataType;
+            this.name = name;
+        }
+        public string Name
+        {
+            get { return this.name; }
+        }
+        public DataTypeCategory DataType
+        {
+            get { return this.dataType; }
+        }
     }
 }

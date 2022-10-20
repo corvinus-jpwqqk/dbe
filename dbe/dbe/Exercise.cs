@@ -18,25 +18,31 @@ namespace dbe
         private List<Column> currentColumns;
         SqlConnection con;
         private int checkCount = 0;
-        List<FunctionType> functions;
         List<string> functionBuilderContent;
+        List<FunctionTemplate> templates;
+        private List<Column> columns;
 
 
-        public Exercise(ref List<Table> tables, ref SqlConnection con)
+        public Exercise(ref List<Column> columns, ref SqlConnection con, ref List<FunctionTemplate> templates)
         {
             this.con = con;
             Random rnd = new Random();
-            currentTable = tables[rnd.Next(tables.Count)];
+            //currentTable = tables[rnd.Next(tables.Count)];
+            this.columns = columns;
             currentColumns = new List<Column>();
+            this.templates = templates;
             functionBuilderContent = new List<string>();
             generateExercise();
         }
 
         private void generateExercise()
         {
-            getSelects();
-            getWhereClause();
-            checkExercise();
+            //getSelects();
+            //getWhereClause();
+            //checkExercise();
+            var f = functionBuilder(DataTypeCategory.String, 2);
+            this.exerciseTextHun = f.FunctionTextHun;
+            this.exerciseTextSQL = f.FunctionTextSql;
         }
 
         public string getExerciseHun()
@@ -121,7 +127,6 @@ namespace dbe
                             }
                         }
                     }
-                    
                 }
                 catch (Exception ex)
                 {
@@ -249,26 +254,51 @@ namespace dbe
                 Console.WriteLine("Checking successful, line count: " + lineCount.ToString());
             }
         }
-        private void functionBuilder(DataTypeCategory returnType, int depth)
+        private Function functionBuilder(DataTypeCategory returnType, int depth)
         {
+            Function f;
             Random rnd = new Random();
-            if (depth == 0)
+            if(depth > 0)
             {
-                var eligibleColumns = currentTable.Columns.Where(t => t.DTC == returnType).ToList();
-                var returnColumn = eligibleColumns[rnd.Next(eligibleColumns.Count)];
-                foreach(string s in functionBuilderContent)
+                var eligibleFunctionTemplates = templates.Where(t => t.returnType == returnType).ToList();
+                if(eligibleFunctionTemplates.Count > 0)
                 {
-                    Console.WriteLine(s);
+                    f = new Function(eligibleFunctionTemplates[rnd.Next(eligibleFunctionTemplates.Count)]);
+                    foreach (FunctionParameter param in f.Parameters)
+                    {
+                        var p = functionBuilder(param.DataType, depth - 1);
+                        MessageBox.Show("created function for: " + p.FunctionTextSql + " , calling buildParam");
+                        f.buildParam(param, p);
+                        MessageBox.Show("called buildparam for: " + p.FunctionTextSql + ", here: " + f.FunctionTextSql);
+                    }
+                    return f;
                 }
-                Console.WriteLine(returnColumn.Name);
             }
-            else
-            {
-                var eligibleFunctions = functions.Where(f => f.dtc == returnType).ToList();
-                var nextFunction = eligibleFunctions[rnd.Next(eligibleFunctions.Count)];
-                functionBuilderContent.Add(nextFunction.name);
-                functionBuilder(nextFunction.dtc, depth - 1);
-            }
+            var eligibleColumns = columns.Where(c => c.DTC == returnType).ToList();
+            f = new Function(eligibleColumns[rnd.Next(eligibleColumns.Count)].Name);
+            return f;
+            
+                
+            //if (depth == 0)
+            //{
+            //    var eligibleColumns = columns.Where(c => c.DTC == returnType).ToList();
+            //    var f = new Function(eligibleColumns[rnd.Next(eligibleColumns.Count)].Name);
+            //    return f;
+            //}
+            //else
+            //{
+            //    var eligibleFunctionTemplates = templates.Where(t => t.returnType == returnType).ToList();
+            //    Function f = new Function(eligibleFunctionTemplates[rnd.Next(eligibleFunctionTemplates.Count)]);
+            //    foreach (FunctionParameter param in f.Parameters)
+            //    {
+            //        var p = functionBuilder(param.DataType, depth - 1);
+            //        MessageBox.Show("created function for: " + p.FunctionTextSql + " , calling buildParam");
+            //        f.buildParam(param, p);
+            //        MessageBox.Show("called buildparam for: " + p.FunctionTextSql + ", here: " + f.FunctionTextSql);
+            //    }
+            //    return f;
+            //}
         }
     }
 }
+

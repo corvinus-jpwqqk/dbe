@@ -31,7 +31,7 @@ namespace dbe
                 {
                     while (rdr.Read())
                     {
-                        this.columns.Add(new Column(rdr[0].ToString(), Convert.ToInt32(rdr[2]), Convert.ToInt32(rdr[1])));
+                        this.columns.Add(new Column(rdr[0].ToString(), Convert.ToInt32(rdr[2]), Convert.ToInt32(rdr[1]), this.name));
                         Console.WriteLine("To table: " + this.name + ", added new Column: " + rdr[0].ToString());
                     }
                 }
@@ -77,6 +77,10 @@ namespace dbe
         public List<Column> Columns
         {
             get { return this.columns; }
+        }
+        public int ID
+        {
+            get { return this.id; }
         }
     }
 }

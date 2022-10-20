@@ -23,9 +23,10 @@ namespace dbe
     {
         string connectionString;
         List<Table> tables = new List<Table>();
+        List<Column> columns = new List<Column>();
         SqlConnection con;
         SqlCommand cmd;
-        List<FunctionType> functions;
+        List<FunctionTemplate> templates = new List<FunctionTemplate>();
 
         public Form1()
         {
@@ -36,9 +37,9 @@ namespace dbe
         {
             con = new SqlConnection(this.connectionString);
             con.Open();
-            fillFunctions();
             getTables();
             getSystemTypes();
+            getFunctionTemplates();
             fillDgv();
         }
         protected override void OnLoad(EventArgs e)
@@ -68,14 +69,39 @@ namespace dbe
                     this.tables.Add(new Table(Convert.ToInt32(rdr[0]), rdr[1].ToString()));
                 }
             }
-            foreach(Table table in this.tables)
-            {
-                table.fetchColumns(ref con);
-            }
+            //foreach(Table table in this.tables)
+            //{
+            //    table.fetchColumns(ref con);
+            //}
             lbTbl.DataSource = this.tables;
             lbTbl.DisplayMember = "Name";
+            fetchColumns(ref con);
         }
-        
+
+        public void fetchColumns(ref SqlConnection con)
+        {
+            foreach(Table table in tables)
+            {
+                try
+                {
+                    SqlCommand cmd = new SqlCommand("SELECT name, max_length, system_type_id FROM sys.columns WHERE object_id = " + table.ID, con);
+                    using (IDataReader rdr = cmd.ExecuteReader())
+                    {
+                        while (rdr.Read())
+                        {
+                            columns.Add(new Column(rdr[0].ToString(), Convert.ToInt32(rdr[2]), Convert.ToInt32(rdr[1]), table.Name));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error while fetching table columns: " + ex.Message);
+                    return;
+                }
+            }
+            dgvPos.DataSource = columns;
+        }
+
         private void getSystemTypes()
         {
             foreach (Table table in this.tables)
@@ -85,27 +111,27 @@ namespace dbe
         }
         private void fillDgv()
         {
-            string tableName = ((Table)(this.lbTbl.SelectedItem)).Name;
+            //string tableName = ((Table)(this.lbTbl.SelectedItem)).Name;
             
 
-            foreach (Table table in this.tables)
-            {
-                if (table.Name == tableName)
-                {
-                    dgvPos.DataSource = table.Columns;
-                }
-            }
+            //foreach (Table table in this.tables)
+            //{
+            //    if (table.Name == tableName)
+            //    {
+            //        dgvPos.DataSource = table.Columns;
+            //    }
+            //}
         }
 
         private void lbTbl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            fillDgv();
+            // fillDgv();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             //testStuff();
-            Exercise ex1 = new Exercise(ref this.tables, ref this.con);
+            Exercise ex1 = new Exercise(ref this.columns, ref this.con, ref this.templates);
             txtHun.Text = ex1.getExerciseHun();
             txtSql.Text = ex1.getExerciseSql();
         }
@@ -122,13 +148,17 @@ namespace dbe
             }
             MessageBox.Show("Date: " + stuff);
         }
-        private void fillFunctions()
+        private void getFunctionTemplates()
         {
-            functions = new List<FunctionType>();
-            functions.Add(new FunctionType("LEFT", DataTypeCategory.String));
-            functions.Add(new FunctionType("RIGHT", DataTypeCategory.String));
-            functions.Add(new FunctionType("LEFT", DataTypeCategory.String));
-            functions.Add(new FunctionType("LEFT", DataTypeCategory.String));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "LEFT([String s], [Numeric n])", "[s] első [n] karaktere"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "RIGHT([String s], [Numeric n])", "[s] utolsó [n] karaktere"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "POWER([Numeric n1], [Numeric n2])", "[n1] a(z) [n2] hatványra emelve"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "ABS([Numeric n])", "[n] anszolútértéke"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "LEN([String s])", "[s] karaktereinek száma"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "LOWER([String s])", "[s] kisbetűssé alakítva"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "UPPER([String s])", "[s] nagybetűssé alakítva"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "CAST([Date d] AS varchar)", "[d] szöveggé konvertálva"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "CAST([Numeric n] AS varchar)", "[n] szöveggé konvertálva"));
         }
     }
 }

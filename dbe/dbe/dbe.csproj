@@ -56,7 +56,7 @@
     </Compile>
     <Compile Include="Function.cs" />
     <Compile Include="FunctionParameter.cs" />
-    <Compile Include="FunctionType.cs" />
+    <Compile Include="FunctionTemplate.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
