@@ -14,17 +14,21 @@ namespace dbe
         private string dataTypeName;
         private DataTypeCategory dtCategory;
         private string tableName;
+        private int tableId;
+        public int colId { get; set; }
 
         public Column()
         {
 
         }
-        public Column(string name, int dataType, int maxLength, string tableName)
+        public Column(string name, int dataType, int maxLength, string tableName, int tableId, int colId)
         {
             this.name = name;
             this.dataType = dataType;
             this.maxLength = maxLength;
             this.tableName = tableName;
+            this.tableId = tableId;
+            this.colId = colId;
             if (dataType == 40
             || dataType == 42)
             {
@@ -68,6 +72,11 @@ namespace dbe
         public string TableName
         {
             get { return this.tableName; }
+        }
+
+        public int TableID
+        {
+            get { return this.tableId; }
         }
     }
 }

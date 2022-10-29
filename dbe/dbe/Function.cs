@@ -16,10 +16,10 @@ namespace dbe
         private string functionTextSql;
 
 
-        public Function(string column)
+        public Function(string value)
         {
-            this.functionTextSql = column;
-            this.functionTextHun = column;
+            this.functionTextSql = value;
+            this.functionTextHun = value;
         }
         public Function(FunctionTemplate ft)
         {
@@ -72,14 +72,27 @@ namespace dbe
                     Console.WriteLine("Error when parsing parameters for SqlTemplate: " + this.name + "\n" + ex.Message);
                     return;
                 }
-                this.parameters.Add(new FunctionParameter(dataType, paramA[1]));
+                ParamType pt;
+                if(paramA[2] == "col")
+                {
+                    pt = ParamType.Column;
+                }
+                else if(paramA[2] == "rnd")
+                {
+                    pt = ParamType.Random;
+                }
+                else
+                {
+                    Console.WriteLine("Error when parsing parameters for SqlTemplate: parameter type is not recognized");
+                    return;
+                }
+                this.parameters.Add(new FunctionParameter(dataType, paramA[1], pt)); ;
                 int newLength = defSql.Length - close - 1;
                 defSql = defSql.Substring(close + 1, newLength);
             }
         }
         public void buildParam(FunctionParameter param, Function p)
         {
-            Console.WriteLine("BUILDPARAM STARTED ");
             var opens = AllIndexesOf(this.functionTextSql, "[");
             var closes = AllIndexesOf(this.functionTextSql, "]");
             for(int i = 0; i < opens.Count; i++)
@@ -97,13 +110,13 @@ namespace dbe
             closes = AllIndexesOf(this.functionTextHun, "]");
             for (int i = 0; i < opens.Count; i++)
             {
-                Console.WriteLine("Param name found: " + this.functionTextHun.Substring(opens[i] + 1, closes[i] - opens[i] - 1));
+                // Console.WriteLine("Param name found: " + this.functionTextHun.Substring(opens[i] + 1, closes[i] - opens[i] - 1));
                 if (this.functionTextHun.Substring(opens[i] + 1, closes[i] - opens[i] - 1) == param.Name)
                 {
                     string begin = this.functionTextHun.Substring(0, opens[i]);
                     string end = this.functionTextHun.Substring(closes[i] + 1, this.functionTextHun.Length - closes[i] - 1);
                     this.functionTextHun = begin + p.functionTextHun + end;
-                    Console.WriteLine("Swapped parameter for: " + this.functionTextHun);
+                    // Console.WriteLine("Swapped parameter for: " + this.functionTextHun);
                     break;
                 }
             }
@@ -111,7 +124,7 @@ namespace dbe
         public List<int> AllIndexesOf(string str, string value)
         {
             if (String.IsNullOrEmpty(value))
-                throw new ArgumentException("the string to find may not be empty", "value");
+                throw new ArgumentException("The string to find cannot be empty", "value");
             List<int> indexes = new List<int>();
             for (int index = 0; ; index += value.Length)
             {

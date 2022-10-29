@@ -20,19 +20,29 @@ namespace dbe
         private int checkCount = 0;
         List<string> functionBuilderContent;
         List<FunctionTemplate> templates;
-        private List<Column> columns;
+        private List<Column> columns = new List<Column>();
+        Random rnd = new Random();
+        List<Table> tables; 
+        List<Table> usedTables = new List<Table>(); // use only table id for used tables
 
 
-        public Exercise(ref List<Column> columns, ref SqlConnection con, ref List<FunctionTemplate> templates)
+        public Exercise(ref List<Table> tables, ref SqlConnection con, ref List<FunctionTemplate> templates)
         {
             this.con = con;
-            Random rnd = new Random();
-            //currentTable = tables[rnd.Next(tables.Count)];
-            this.columns = columns;
+            currentTable = tables[rnd.Next(tables.Count)];
+            this.tables = tables;
             currentColumns = new List<Column>();
             this.templates = templates;
             functionBuilderContent = new List<string>();
+            foreach(Table table in tables)
+            {
+                foreach(Column col in table.columns)
+                {
+                    this.columns.Add(col);
+                }
+            }
             generateExercise();
+
         }
 
         private void generateExercise()
@@ -56,38 +66,52 @@ namespace dbe
 
         public virtual void getSelects()
         {
-            Random rnd = new Random();
-            int colCount = 0;
-            while(colCount == 0)
+            this.exerciseTextSQL += "SELECT ";
+            this.exerciseTextHun += "Válaszd ki a(z) ";
+            List<string> usedColumns = new List<string>();
+            foreach(Table table in this.tables)
             {
-                foreach (Column column in currentTable.Columns)
+                foreach(Column col in table.columns)
                 {
-                    if (rnd.Next(2) == 1)
+                    if(rnd.Next(2) == 1)
                     {
-                        currentColumns.Add(column);
-                        colCount++;
+                        usedColumns.Add(table.name + "." + col.Name);
+                        this.currentColumns.Add(col);
+                        this.usedTables.Add(this.tables.Where(t => t.id == col.TableID).ToList()[0]);
                     }
                 }
             }
-            if(currentColumns.Count == currentTable.Columns.Count)
+            for (int i = 0; i < currentColumns.Count-1; i++)
             {
-                this.exerciseTextSQL = "SELECT * FROM " + currentTable.Name;
-                this.exerciseTextHun = "Válaszd ki a " + currentTable.Name + " tábla összes oszlopát ";
+                this.exerciseTextSQL += usedColumns[i] + ", ";
+                this.exerciseTextHun += usedColumns[i] + ", ";
             }
-            else
+            this.exerciseTextSQL += usedColumns[usedColumns.Count-1] + " ";
+            this.exerciseTextHun += usedColumns[usedColumns.Count - 1] + " oszlopokat";
+
+            getFrom();
+        }
+
+        private void getFrom()
+        {
+            List<int> connected = new List<int>();
+            string fromSql = "FROM " + usedTables[0].name + "\n";
+            foreach(Table table in this.usedTables)
             {
-                this.exerciseTextSQL = "SELECT ";
-                this.exerciseTextHun = "Válaszd ki a " + currentTable.Name + " tábla ";
-                for (int i = 0; i < this.currentColumns.Count-1; i++)
+                foreach(var relation in table.relations)
                 {
-                    this.exerciseTextHun += this.currentColumns[i].Name + ", ";
-                    this.exerciseTextSQL += this.currentColumns[i].Name + ", ";
+                    if (usedTables.Where(t => t.id == relation.Item2).ToList().Count > 0 && !connected.Contains(relation.Item2))
+                    {
+                        Table relatedTable = usedTables.Where(t => t.id == relation.Item2).ToList()[0];
+                        Column relatedColumn = relatedTable.columns.Where(c => c.colId == relation.Item3).ToList()[0];
+                        Column currentColumn = table.columns.Where(c => c.colId == relation.Item1).ToList()[0];
+                        fromSql += "JOIN " + relatedTable.name + " ON " + table.name + "." + currentColumn.Name + " = " + relatedTable.name + "." + relatedColumn.Name + " \n";
+                        connected.Add(table.id);
+                        connected.Add(relatedTable.id);
+                    }
                 }
-                this.exerciseTextHun += this.currentColumns[currentColumns.Count - 1].Name + " ";
-                this.exerciseTextSQL += this.currentColumns[currentColumns.Count - 1].Name + " ";
-                this.exerciseTextSQL += "FROM " + currentTable.Name;
-                this.exerciseTextHun += "oszlopait";
             }
+            this.exerciseTextSQL += fromSql;
         }
         public virtual void getWhereClause()
         {
@@ -109,7 +133,7 @@ namespace dbe
                     else if(whereColumn.DTC == DataTypeCategory.Date 
                          || whereColumn.DTC == DataTypeCategory.Numeric)
                     {
-                        cmd = new SqlCommand("SELECT MIN(" + whereColumn.Name + "), MAX(" + whereColumn.Name + ") FROM " + currentTable.Name, con);
+                        cmd = new SqlCommand("SELECT MIN(" + whereColumn.Name + "), MAX(" + whereColumn.Name + ") FROM " + currentTable.name, con);
                         using (IDataReader rdr = cmd.ExecuteReader())
                         {
                             while (rdr.Read())
@@ -205,7 +229,7 @@ namespace dbe
             if(whereType == 0)
             {
                 string startsWith = "";
-                SqlCommand cmd = new SqlCommand("SELECT TOP 1 LEFT(" + whereColumn.Name + ", 1), COUNT(*) FROM " + currentTable.Name 
+                SqlCommand cmd = new SqlCommand("SELECT TOP 1 LEFT(" + whereColumn.Name + ", 1), COUNT(*) FROM " + currentTable.name
                                + "GROUP BY LEFT(" + whereColumn.Name + ", 1) ORDER BY COUNT(*) DESC", con);
                 try
                 {
@@ -231,7 +255,7 @@ namespace dbe
         {
             if(checkCount > 3)
             {
-                MessageBox.Show("Could not generate exercise from table: " + this.currentTable.Name);
+                MessageBox.Show("Could not generate exercise from table: " + this.currentTable.name);
             }
             else
             {
@@ -257,7 +281,6 @@ namespace dbe
         private Function functionBuilder(DataTypeCategory returnType, int depth)
         {
             Function f;
-            Random rnd = new Random();
             if(depth > 0)
             {
                 var eligibleFunctionTemplates = templates.Where(t => t.returnType == returnType).ToList();
@@ -266,38 +289,28 @@ namespace dbe
                     f = new Function(eligibleFunctionTemplates[rnd.Next(eligibleFunctionTemplates.Count)]);
                     foreach (FunctionParameter param in f.Parameters)
                     {
-                        var p = functionBuilder(param.DataType, depth - 1);
-                        MessageBox.Show("created function for: " + p.FunctionTextSql + " , calling buildParam");
-                        f.buildParam(param, p);
-                        MessageBox.Show("called buildparam for: " + p.FunctionTextSql + ", here: " + f.FunctionTextSql);
+                        if(param.ParamType == ParamType.Column)
+                        {
+                            var p = functionBuilder(param.DataType, depth - 1);
+                            //MessageBox.Show("created function for: " + p.FunctionTextSql + " , calling buildParam");
+                            f.buildParam(param, p);
+                            //MessageBox.Show("called buildparam for: " + p.FunctionTextSql + ", here: " + f.FunctionTextSql);
+                        }
+                        else if(param.ParamType == ParamType.Random) 
+                        {
+                            var p = new Function(rnd.Next(1,5).ToString());
+                            f.buildParam(param, p);
+                        }
                     }
                     return f;
                 }
             }
             var eligibleColumns = columns.Where(c => c.DTC == returnType).ToList();
-            f = new Function(eligibleColumns[rnd.Next(eligibleColumns.Count)].Name);
+            var usedColumn = eligibleColumns[rnd.Next(eligibleColumns.Count)];
+            var usedTable = this.tables.Where(t => t.id == usedColumn.TableID).ToList()[0];
+            usedTables.Add(usedTable);
+            f = new Function(usedColumn.TableName + "." + usedColumn.Name);
             return f;
-            
-                
-            //if (depth == 0)
-            //{
-            //    var eligibleColumns = columns.Where(c => c.DTC == returnType).ToList();
-            //    var f = new Function(eligibleColumns[rnd.Next(eligibleColumns.Count)].Name);
-            //    return f;
-            //}
-            //else
-            //{
-            //    var eligibleFunctionTemplates = templates.Where(t => t.returnType == returnType).ToList();
-            //    Function f = new Function(eligibleFunctionTemplates[rnd.Next(eligibleFunctionTemplates.Count)]);
-            //    foreach (FunctionParameter param in f.Parameters)
-            //    {
-            //        var p = functionBuilder(param.DataType, depth - 1);
-            //        MessageBox.Show("created function for: " + p.FunctionTextSql + " , calling buildParam");
-            //        f.buildParam(param, p);
-            //        MessageBox.Show("called buildparam for: " + p.FunctionTextSql + ", here: " + f.FunctionTextSql);
-            //    }
-            //    return f;
-            //}
         }
     }
 }

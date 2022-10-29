@@ -19,6 +19,11 @@ namespace dbe
         Date,
         Unhandled
     }
+    enum ParamType
+    {
+        Column,
+        Random
+    }
     public partial class Form1 : Form
     {
         string connectionString;
@@ -69,38 +74,39 @@ namespace dbe
                     this.tables.Add(new Table(Convert.ToInt32(rdr[0]), rdr[1].ToString()));
                 }
             }
-            //foreach(Table table in this.tables)
-            //{
-            //    table.fetchColumns(ref con);
-            //}
+            foreach (Table table in this.tables)
+            {
+                table.fetchColumns(ref con);
+                table.getRelationSheeps(ref con);
+            }
             lbTbl.DataSource = this.tables;
             lbTbl.DisplayMember = "Name";
-            fetchColumns(ref con);
+            //fetchColumns(ref con);
         }
 
-        public void fetchColumns(ref SqlConnection con)
-        {
-            foreach(Table table in tables)
-            {
-                try
-                {
-                    SqlCommand cmd = new SqlCommand("SELECT name, max_length, system_type_id FROM sys.columns WHERE object_id = " + table.ID, con);
-                    using (IDataReader rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            columns.Add(new Column(rdr[0].ToString(), Convert.ToInt32(rdr[2]), Convert.ToInt32(rdr[1]), table.Name));
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error while fetching table columns: " + ex.Message);
-                    return;
-                }
-            }
-            dgvPos.DataSource = columns;
-        }
+        //public void fetchColumns(ref SqlConnection con)
+        //{
+        //    foreach(Table table in tables)
+        //    {
+        //        try
+        //        {
+        //            SqlCommand cmd = new SqlCommand("SELECT name, max_length, system_type_id FROM sys.columns WHERE object_id = " + table.ID, con);
+        //            using (IDataReader rdr = cmd.ExecuteReader())
+        //            {
+        //                while (rdr.Read())
+        //                {
+        //                    columns.Add(new Column(rdr[0].ToString(), Convert.ToInt32(rdr[2]), Convert.ToInt32(rdr[1]), table.Name, table.ID));
+        //                }
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MessageBox.Show("Error while fetching table columns: " + ex.Message);
+        //            return;
+        //        }
+        //    }
+        //    dgvPos.DataSource = columns;
+        //}
 
         private void getSystemTypes()
         {
@@ -111,27 +117,27 @@ namespace dbe
         }
         private void fillDgv()
         {
-            //string tableName = ((Table)(this.lbTbl.SelectedItem)).Name;
-            
+            string tableName = ((Table)(this.lbTbl.SelectedItem)).name;
 
-            //foreach (Table table in this.tables)
-            //{
-            //    if (table.Name == tableName)
-            //    {
-            //        dgvPos.DataSource = table.Columns;
-            //    }
-            //}
+
+            foreach (Table table in this.tables)
+            {
+                if (table.name == tableName)
+                {
+                    dgvPos.DataSource = table.columns;
+                }
+            }
         }
 
         private void lbTbl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // fillDgv();
+            fillDgv();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             //testStuff();
-            Exercise ex1 = new Exercise(ref this.columns, ref this.con, ref this.templates);
+            Exercise ex1 = new Exercise(ref this.tables, ref this.con, ref this.templates);
             txtHun.Text = ex1.getExerciseHun();
             txtSql.Text = ex1.getExerciseSql();
         }
@@ -150,15 +156,20 @@ namespace dbe
         }
         private void getFunctionTemplates()
         {
-            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "LEFT([String s], [Numeric n])", "[s] első [n] karaktere"));
-            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "RIGHT([String s], [Numeric n])", "[s] utolsó [n] karaktere"));
-            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "POWER([Numeric n1], [Numeric n2])", "[n1] a(z) [n2] hatványra emelve"));
-            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "ABS([Numeric n])", "[n] anszolútértéke"));
-            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "LEN([String s])", "[s] karaktereinek száma"));
-            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "LOWER([String s])", "[s] kisbetűssé alakítva"));
-            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "UPPER([String s])", "[s] nagybetűssé alakítva"));
-            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "CAST([Date d] AS varchar)", "[d] szöveggé konvertálva"));
-            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "CAST([Numeric n] AS varchar)", "[n] szöveggé konvertálva"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "LEFT([String s col], [Numeric n rnd])", "[s] első [n] karaktere"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "RIGHT([String s col], [Numeric n rnd])", "[s] utolsó [n] karaktere"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "POWER([Numeric n1 col], [Numeric n2 rnd])", "[n1] a(z) [n2] hatványra emelve"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "ABS([Numeric n col])", "[n] anszolútértéke"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "LEN([String s col])", "[s] karaktereinek száma"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "LOWER([String s col])", "[s] kisbetűssé alakítva"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "UPPER([String s col])", "[s] nagybetűssé alakítva"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "CAST([Date d col] AS varchar)", "[d] szöveggé konvertálva"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "CAST([Numeric n col] AS varchar)", "[n] szöveggé konvertálva"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.Date, "GETDATE()", "a mai dátum"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "YEAR([Date d col])", "[d] évszáma"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "MONTH([Date d col])", "[d] hónapszáma"));
+            this.templates.Add(new FunctionTemplate(DataTypeCategory.Numeric, "DAY([Date d col])", "[d] napszáma"));
+            // this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "CAST([Numeric n] AS varchar)", "[n] szöveggé konvertálva"));
         }
     }
 }

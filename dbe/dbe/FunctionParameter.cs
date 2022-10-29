@@ -10,10 +10,13 @@ namespace dbe
     {
         private string name;
         private DataTypeCategory dataType;
-        public FunctionParameter(DataTypeCategory dataType, string name)
+        private ParamType paramType;
+
+        public FunctionParameter(DataTypeCategory dataType, string name, ParamType pt)
         {
             this.dataType = dataType;
             this.name = name;
+            this.paramType = pt;
         }
         public string Name
         {
@@ -22,6 +25,10 @@ namespace dbe
         public DataTypeCategory DataType
         {
             get { return this.dataType; }
+        }
+        public ParamType ParamType
+        {
+            get { return this.paramType; }
         }
     }
 }
