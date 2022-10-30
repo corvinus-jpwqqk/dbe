@@ -84,30 +84,6 @@ namespace dbe
             //fetchColumns(ref con);
         }
 
-        //public void fetchColumns(ref SqlConnection con)
-        //{
-        //    foreach(Table table in tables)
-        //    {
-        //        try
-        //        {
-        //            SqlCommand cmd = new SqlCommand("SELECT name, max_length, system_type_id FROM sys.columns WHERE object_id = " + table.ID, con);
-        //            using (IDataReader rdr = cmd.ExecuteReader())
-        //            {
-        //                while (rdr.Read())
-        //                {
-        //                    columns.Add(new Column(rdr[0].ToString(), Convert.ToInt32(rdr[2]), Convert.ToInt32(rdr[1]), table.Name, table.ID));
-        //                }
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            MessageBox.Show("Error while fetching table columns: " + ex.Message);
-        //            return;
-        //        }
-        //    }
-        //    dgvPos.DataSource = columns;
-        //}
-
         private void getSystemTypes()
         {
             foreach (Table table in this.tables)
@@ -139,7 +115,17 @@ namespace dbe
             //testStuff();
             Exercise ex1 = new Exercise(ref this.tables, ref this.con, ref this.templates);
             txtHun.Text = ex1.getExerciseHun();
-            txtSql.Text = ex1.getExerciseSql();
+            txtSql.Text = ex1.getExerciseSql().Replace("\n", Environment.NewLine);
+
+            var select = ex1.getExerciseSql();
+            var dataAdapter = new SqlDataAdapter(select, this.con);
+
+            var commandBuilder = new SqlCommandBuilder(dataAdapter);
+            var ds = new DataSet();
+            dataAdapter.Fill(ds);
+            dgvPos.ReadOnly = true;
+            dgvPos.DataSource = ds.Tables[0];
+
         }
         private void testStuff()
         {

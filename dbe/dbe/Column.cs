@@ -78,5 +78,9 @@ namespace dbe
         {
             get { return this.tableId; }
         }
+        public string fullName()
+        {
+            return this.tableName + "." + this.name;
+        }
     }
 }

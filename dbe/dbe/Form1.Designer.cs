@@ -40,29 +40,30 @@ namespace dbe
             // lbTbl
             // 
             this.lbTbl.FormattingEnabled = true;
-            this.lbTbl.ItemHeight = 20;
-            this.lbTbl.Location = new System.Drawing.Point(15, 16);
-            this.lbTbl.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.lbTbl.ItemHeight = 16;
+            this.lbTbl.Location = new System.Drawing.Point(13, 13);
             this.lbTbl.Name = "lbTbl";
-            this.lbTbl.Size = new System.Drawing.Size(122, 284);
+            this.lbTbl.Size = new System.Drawing.Size(109, 228);
             this.lbTbl.TabIndex = 0;
             this.lbTbl.SelectedIndexChanged += new System.EventHandler(this.lbTbl_SelectedIndexChanged);
             // 
             // dgvPos
             // 
             this.dgvPos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPos.Location = new System.Drawing.Point(153, 16);
+            this.dgvPos.Location = new System.Drawing.Point(136, 13);
+            this.dgvPos.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dgvPos.Name = "dgvPos";
             this.dgvPos.RowHeadersWidth = 62;
             this.dgvPos.RowTemplate.Height = 28;
-            this.dgvPos.Size = new System.Drawing.Size(918, 284);
+            this.dgvPos.Size = new System.Drawing.Size(816, 227);
             this.dgvPos.TabIndex = 1;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(15, 327);
+            this.button1.Location = new System.Drawing.Point(13, 262);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(159, 44);
+            this.button1.Size = new System.Drawing.Size(141, 35);
             this.button1.TabIndex = 2;
             this.button1.Text = "generate exercise 1";
             this.button1.UseVisualStyleBackColor = true;
@@ -70,29 +71,38 @@ namespace dbe
             // 
             // txtHun
             // 
-            this.txtHun.Location = new System.Drawing.Point(180, 327);
+            this.txtHun.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtHun.Location = new System.Drawing.Point(160, 262);
+            this.txtHun.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtHun.Multiline = true;
             this.txtHun.Name = "txtHun";
-            this.txtHun.Size = new System.Drawing.Size(882, 26);
+            this.txtHun.Size = new System.Drawing.Size(784, 91);
             this.txtHun.TabIndex = 3;
             // 
             // txtSql
             // 
-            this.txtSql.Location = new System.Drawing.Point(180, 359);
+            this.txtSql.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtSql.Location = new System.Drawing.Point(159, 357);
+            this.txtSql.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtSql.Multiline = true;
             this.txtSql.Name = "txtSql";
-            this.txtSql.Size = new System.Drawing.Size(882, 26);
+            this.txtSql.Size = new System.Drawing.Size(784, 191);
             this.txtSql.TabIndex = 4;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1074, 699);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(955, 559);
             this.Controls.Add(this.txtSql);
             this.Controls.Add(this.txtHun);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.dgvPos);
             this.Controls.Add(this.lbTbl);
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.dgvPos)).EndInit();
