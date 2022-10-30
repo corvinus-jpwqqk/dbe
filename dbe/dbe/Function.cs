@@ -8,51 +8,25 @@ namespace dbe
 {
     class Function
     {
-        private string name;
-        private DataTypeCategory returnType;
-        private List<FunctionParameter> parameters;
-        private int maxLength;
-        private string functionTextHun;
-        private string functionTextSql;
+        public string Name { get; set; }
+        public DataTypeCategory ReturnType { get; set; }
 
+        public List<FunctionParameter> Parameters { get; set; }
+        public string FunctionTextHun { get; set; }
+        public string FunctionTextSQL { get; set; }
 
         public Function(string value)
         {
-            this.functionTextSql = value;
-            this.functionTextHun = value;
+            this.FunctionTextSQL = value;
+            this.FunctionTextHun = value;
         }
         public Function(FunctionTemplate ft)
         {
-            this.name = ft.TemplateSql.Substring(0, ft.TemplateSql.IndexOf('('));
-            parameters = new List<FunctionParameter>();
-            parseParams(ft.TemplateSql);
-            this.functionTextHun = ft.TemplateHun;
-            this.functionTextSql = ft.TemplateSql;
-        }
-
-        public string Name
-        {
-            get { return this.name; }
-        }
-        public DataTypeCategory ReturnType
-        {
-            get { return this.returnType; }
-        }
-        public List<FunctionParameter> Parameters
-        {
-            get { return this.parameters; }
-        }
-        public int MaxLength
-        {
-            get { return this.maxLength; }
-        }
-        public string FunctionTextHun
-        {
-            get { return this.functionTextHun; }
-        }
-        public string FunctionTextSql
-        {
-            get { return this.functionTextSql; }
+            this.Name = ft.TemplateSQL.Substring(0, ft.TemplateSQL.IndexOf('('));
+            Parameters = new List<FunctionParameter>();
+            parseParams(ft.TemplateSQL);
+            this.FunctionTextHun = ft.TemplateHun;
+            this.FunctionTextSQL = ft.TemplateSQL;
         }
         private void parseParams(string defSql)
         {
@@ -69,7 +43,7 @@ namespace dbe
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error when parsing parameters for SqlTemplate: " + this.name + "\n" + ex.Message);
+                    Console.WriteLine("Error when parsing parameters for SqlTemplate: " + this.Name + "\n" + ex.Message);
                     return;
                 }
                 ParamType pt;
@@ -86,36 +60,36 @@ namespace dbe
                     Console.WriteLine("Error when parsing parameters for SqlTemplate: parameter type is not recognized");
                     return;
                 }
-                this.parameters.Add(new FunctionParameter(dataType, paramA[1], pt)); ;
+                this.Parameters.Add(new FunctionParameter(dataType, paramA[1], pt)); ;
                 int newLength = defSql.Length - close - 1;
                 defSql = defSql.Substring(close + 1, newLength);
             }
         }
         public void buildParam(FunctionParameter param, Function p)
         {
-            var opens = AllIndexesOf(this.functionTextSql, "[");
-            var closes = AllIndexesOf(this.functionTextSql, "]");
+            var opens = AllIndexesOf(this.FunctionTextSQL, "[");
+            var closes = AllIndexesOf(this.FunctionTextSQL, "]");
             for(int i = 0; i < opens.Count; i++)
             {
-                if(this.functionTextSql.Substring(opens[i], closes[i] - opens[i]).Split(' ')[1] == param.Name)
+                if(this.FunctionTextSQL.Substring(opens[i], closes[i] - opens[i]).Split(' ')[1] == param.Name)
                 {
-                    string begin = this.functionTextSql.Substring(0, opens[i]);
-                    string end = this.functionTextSql.Substring(closes[i] + 1, this.functionTextSql.Length - closes[i] - 1);
-                    this.functionTextSql = begin +  p.functionTextSql + end;
+                    string begin = this.FunctionTextSQL.Substring(0, opens[i]);
+                    string end = this.FunctionTextSQL.Substring(closes[i] + 1, this.FunctionTextSQL.Length - closes[i] - 1);
+                    this.FunctionTextSQL = begin +  p.FunctionTextSQL + end;
                     break;
                 }
             }
 
-            opens = AllIndexesOf(this.functionTextHun, "[");
-            closes = AllIndexesOf(this.functionTextHun, "]");
+            opens = AllIndexesOf(this.FunctionTextHun, "[");
+            closes = AllIndexesOf(this.FunctionTextHun, "]");
             for (int i = 0; i < opens.Count; i++)
             {
                 // Console.WriteLine("Param name found: " + this.functionTextHun.Substring(opens[i] + 1, closes[i] - opens[i] - 1));
-                if (this.functionTextHun.Substring(opens[i] + 1, closes[i] - opens[i] - 1) == param.Name)
+                if (this.FunctionTextHun.Substring(opens[i] + 1, closes[i] - opens[i] - 1) == param.Name)
                 {
-                    string begin = this.functionTextHun.Substring(0, opens[i]);
-                    string end = this.functionTextHun.Substring(closes[i] + 1, this.functionTextHun.Length - closes[i] - 1);
-                    this.functionTextHun = begin + p.functionTextHun + end;
+                    string begin = this.FunctionTextHun.Substring(0, opens[i]);
+                    string end = this.FunctionTextHun.Substring(closes[i] + 1, this.FunctionTextHun.Length - closes[i] - 1);
+                    this.FunctionTextHun = begin + p.FunctionTextHun + end;
                     // Console.WriteLine("Swapped parameter for: " + this.functionTextHun);
                     break;
                 }

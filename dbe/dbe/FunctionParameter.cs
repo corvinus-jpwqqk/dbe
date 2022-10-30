@@ -8,27 +8,14 @@ namespace dbe
 {
     class FunctionParameter
     {
-        private string name;
-        private DataTypeCategory dataType;
-        private ParamType paramType;
-
+        public string Name { get; set; }
+        public DataTypeCategory DataType { get; set; }
+        public ParamType ParamType { get; set; }
         public FunctionParameter(DataTypeCategory dataType, string name, ParamType pt)
         {
-            this.dataType = dataType;
-            this.name = name;
-            this.paramType = pt;
-        }
-        public string Name
-        {
-            get { return this.name; }
-        }
-        public DataTypeCategory DataType
-        {
-            get { return this.dataType; }
-        }
-        public ParamType ParamType
-        {
-            get { return this.paramType; }
+            this.DataType = dataType;
+            this.Name = name;
+            this.ParamType = pt;
         }
     }
 }

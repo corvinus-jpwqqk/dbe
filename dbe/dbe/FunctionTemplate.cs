@@ -8,27 +8,15 @@ namespace dbe
 {
     class FunctionTemplate
     {
-        public DataTypeCategory returnType;
-        private string templateSql;
-        private string templateHun;
+        public DataTypeCategory ReturnType { get; set; }
+        public string TemplateSQL { get; set; }
+        public string TemplateHun { get; set; }
         
         public FunctionTemplate(DataTypeCategory returnType, string templateSql, string templateHun)
         {
-            this.returnType = returnType;
-            this.templateSql = templateSql;
-            this.templateHun = templateHun;
-        }
-        public DataTypeCategory ReturnType
-        {
-            get { return this.returnType; }
-        }
-        public string TemplateHun
-        {
-            get { return this.templateHun; }
-        }
-        public string TemplateSql
-        {
-            get { return this.templateSql; }
+            this.ReturnType = returnType;
+            this.TemplateSQL = templateSql;
+            this.TemplateHun = templateHun;
         }
     }
 }

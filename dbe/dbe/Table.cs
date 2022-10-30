@@ -13,7 +13,6 @@ namespace dbe
     {
         public int id { get; set; }
         public string name { get; set; }
-
         public List<Column> columns { get; set; }
         public List<Tuple<int, int, int>> relations { get; set; }
 
@@ -44,11 +43,6 @@ namespace dbe
                 MessageBox.Show("Error while fetching table columns: " + ex.Message);
                 return;
             }
-        }
-
-        private void getFunctions()
-        {
-
         }
 
         public void getRelationSheeps(ref SqlConnection con)
@@ -82,29 +76,6 @@ namespace dbe
             {
                 MessageBox.Show("Error while fetching column type name: " + ex.Message);
                 return;
-            }
-        }
-
-        public void getDataTypeNames(ref SqlConnection con)
-        {
-            foreach (Column column in this.columns)
-            {
-                try
-                {
-                    SqlCommand cmd = new SqlCommand("SELECT name FROM sys.types WHERE system_type_id= " + column.getDataType(), con);
-                    using (IDataReader rdr = cmd.ExecuteReader())
-                    {
-                        while (rdr.Read())
-                        {
-                            column.setDataTypeName(rdr[0].ToString());
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error while fetching column type name: " + ex.Message);
-                    return;
-                }
             }
         }
     }

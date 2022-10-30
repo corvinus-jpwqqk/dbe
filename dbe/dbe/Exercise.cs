@@ -14,12 +14,12 @@ namespace dbe
     {
         private string exerciseTextHun = "";
         private string exerciseTextSQL = "";
-        SqlConnection con;
+        readonly SqlConnection con;
         private int checkCount = 0;
-        List<FunctionTemplate> templates;
-        private List<Column> columns = new List<Column>();
-        Random rnd = new Random();
-        List<Table> tables;
+        readonly List<FunctionTemplate> templates;
+        private readonly List<Column> columns = new List<Column>();
+        readonly Random rnd = new Random();
+        readonly List<Table> tables;
         List<Column> usedColumns = new List<Column>();
         string groupBy = "";
 
@@ -46,7 +46,7 @@ namespace dbe
             checkExercise();
             //var f = functionBuilder(DataTypeCategory.String, 2);
             //this.exerciseTextHun = f.FunctionTextHun;
-            //this.exerciseTextSQL = f.FunctionTextSql;
+            //this.exerciseTextSQL = f.FunctionTextSQL;
         }
 
         public string getExerciseHun()
@@ -100,8 +100,8 @@ namespace dbe
                     if (tables.Where(t => t.id == relation.Item2).ToList().Count > 0 && !connected.Contains(relation.Item2))
                     {
                         Table relatedTable = tables.Where(t => t.id == relation.Item2).ToList()[0];
-                        Column relatedColumn = relatedTable.columns.Where(c => c.colId == relation.Item3).ToList()[0];
-                        Column currentColumn = table.columns.Where(c => c.colId == relation.Item1).ToList()[0];
+                        Column relatedColumn = relatedTable.columns.Where(c => c.ColID == relation.Item3).ToList()[0];
+                        Column currentColumn = table.columns.Where(c => c.ColID == relation.Item1).ToList()[0];
                         fromSql += "\nJOIN " + relatedTable.name + " ON " + table.name + "." + currentColumn.Name + " = " + relatedTable.name + "." + relatedColumn.Name;
                         connected.Add(table.id);
                         connected.Add(relatedTable.id);
@@ -126,16 +126,16 @@ namespace dbe
                 SqlCommand cmd;
                 try
                 {
-                    if (whereColumn.DTC == DataTypeCategory.Unhandled) continue;
-                    else if(whereColumn.DTC == DataTypeCategory.Date 
-                         || whereColumn.DTC == DataTypeCategory.Numeric)
+                    if (whereColumn.DataType == DataTypeCategory.Unhandled) continue;
+                    else if(whereColumn.DataType == DataTypeCategory.Date 
+                         || whereColumn.DataType == DataTypeCategory.Numeric)
                     {
                         cmd = new SqlCommand("SELECT MIN(" + whereColumn.Name + "), MAX(" + whereColumn.Name + ") FROM " + whereColumn.TableName, con);
                         using (IDataReader rdr = cmd.ExecuteReader())
                         {
                             while (rdr.Read())
                             {
-                                if(whereColumn.DTC == DataTypeCategory.Numeric)
+                                if(whereColumn.DataType == DataTypeCategory.Numeric)
                                 {
                                     minValue = Convert.ToDouble(rdr[0]);
                                     maxValue = Convert.ToDouble(rdr[1]);
@@ -156,15 +156,15 @@ namespace dbe
                 }
                 success = true;
             }
-            if(whereColumn.DTC == DataTypeCategory.Numeric)
+            if(whereColumn.DataType == DataTypeCategory.Numeric)
             {
                 getNumericWhere(ref whereColumn, minValue, maxValue);
             }
-            else if(whereColumn.DTC == DataTypeCategory.Date)
+            else if(whereColumn.DataType == DataTypeCategory.Date)
             {
                 getDateWhere(ref whereColumn, minDate, maxDate);
             }
-            else if(whereColumn.DTC == DataTypeCategory.String)
+            else if(whereColumn.DataType == DataTypeCategory.String)
             {
                 getStringWhere(ref whereColumn);
             }
@@ -190,8 +190,8 @@ namespace dbe
             {
                 int btMin = rnd.Next(Convert.ToInt32(minValue), (Convert.ToInt32(minValue) + Convert.ToInt32(maxValue)) / 2);
                 int btMax = rnd.Next((Convert.ToInt32(minValue) + Convert.ToInt32(maxValue)) / 2, Convert.ToInt32(maxValue));
-                this.exerciseTextSQL += "\nWHERE " + whereColumn.fullName() + " BETWEEN " + minValue + " AND " + maxValue + " ";
-                this.exerciseTextHun += ", ahol a " + whereColumn.fullName() + " mező értéke " + minValue.ToString() + " és " + maxValue.ToString() + " közé esik ";
+                this.exerciseTextSQL += "\nWHERE " + whereColumn.fullName() + " BETWEEN " + btMin + " AND " + btMax + " ";
+                this.exerciseTextHun += ", ahol a " + whereColumn.fullName() + " mező értéke " + btMin.ToString() + " és " + btMax.ToString() + " közé esik ";
             }
         }
         private void getDateWhere(ref Column whereColumn, DateTime minDate, DateTime maxDate)
@@ -221,7 +221,6 @@ namespace dbe
         }
         private void getStringWhere(ref Column whereColumn)
         {
-            Random rnd = new Random();
             int whereType = 0; //rnd.Next(3);
             if(whereType == 0)
             {
@@ -283,7 +282,7 @@ namespace dbe
             Function f;
             if(depth > 0)
             {
-                var eligibleFunctionTemplates = templates.Where(t => t.returnType == returnType).ToList();
+                var eligibleFunctionTemplates = templates.Where(t => t.ReturnType == returnType).ToList();
                 if(eligibleFunctionTemplates.Count > 0)
                 {
                     f = new Function(eligibleFunctionTemplates[rnd.Next(eligibleFunctionTemplates.Count)]);
@@ -305,7 +304,7 @@ namespace dbe
                     return f;
                 }
             }
-            var eligibleColumns = columns.Where(c => c.DTC == returnType).ToList();
+            var eligibleColumns = columns.Where(c => c.DataType == returnType).ToList();
             var usedColumn = eligibleColumns[rnd.Next(eligibleColumns.Count)];
             f = new Function(usedColumn.fullName());
             return f;
@@ -314,10 +313,12 @@ namespace dbe
         private Tuple<string, string> getAggregateFunction(ref List<Column> usedColumns)
         {
             var currentColumn = this.columns[rnd.Next(this.columns.Count)];
-            List<Tuple<string, string>> aggregateFunctions = new List<Tuple<string, string>>();
-            aggregateFunctions.Add(new Tuple<string, string>("COUNT(DISTINCT ", " különböző értékeinek darabszáma "));
-            aggregateFunctions.Add(new Tuple<string, string>("COUNT(", " értékeinek darabszáma "));
-            if (currentColumn.DTC == DataTypeCategory.Numeric)
+            List<Tuple<string, string>> aggregateFunctions = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("COUNT(DISTINCT ", " különböző értékeinek darabszáma "),
+                new Tuple<string, string>("COUNT(", " értékeinek darabszáma ")
+            };
+            if (currentColumn.DataType == DataTypeCategory.Numeric)
             {
                 aggregateFunctions.Add(new Tuple<string, string>("SUM(", " értékeinek összege "));
                 aggregateFunctions.Add(new Tuple<string, string>("AVG(", " értékeinek átlaga "));

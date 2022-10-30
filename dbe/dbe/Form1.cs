@@ -28,7 +28,6 @@ namespace dbe
     {
         string connectionString;
         List<Table> tables = new List<Table>();
-        List<Column> columns = new List<Column>();
         SqlConnection con;
         SqlCommand cmd;
         List<FunctionTemplate> templates = new List<FunctionTemplate>();
@@ -43,7 +42,6 @@ namespace dbe
             con = new SqlConnection(this.connectionString);
             con.Open();
             getTables();
-            getSystemTypes();
             getFunctionTemplates();
             fillDgv();
         }
@@ -83,14 +81,6 @@ namespace dbe
             lbTbl.DisplayMember = "Name";
             //fetchColumns(ref con);
         }
-
-        private void getSystemTypes()
-        {
-            foreach (Table table in this.tables)
-            {
-                table.getDataTypeNames(ref con);
-            }
-        }
         private void fillDgv()
         {
             string tableName = ((Table)(this.lbTbl.SelectedItem)).name;
@@ -112,33 +102,17 @@ namespace dbe
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //testStuff();
             Exercise ex1 = new Exercise(ref this.tables, ref this.con, ref this.templates);
             txtHun.Text = ex1.getExerciseHun();
             txtSql.Text = ex1.getExerciseSql().Replace("\n", Environment.NewLine);
 
             var select = ex1.getExerciseSql();
             var dataAdapter = new SqlDataAdapter(select, this.con);
-
-            var commandBuilder = new SqlCommandBuilder(dataAdapter);
             var ds = new DataSet();
             dataAdapter.Fill(ds);
             dgvPos.ReadOnly = true;
             dgvPos.DataSource = ds.Tables[0];
 
-        }
-        private void testStuff()
-        {
-            cmd = new SqlCommand("select MIN(ROGZ_IDO) from szallashely", con);
-            DateTime stuff = new DateTime();
-            using (IDataReader rdr = cmd.ExecuteReader())
-            {
-                while (rdr.Read())
-                {
-                    stuff = Convert.ToDateTime(rdr[0]);
-                }
-            }
-            MessageBox.Show("Date: " + stuff);
         }
         private void getFunctionTemplates()
         {

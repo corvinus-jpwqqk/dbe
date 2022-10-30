@@ -8,79 +8,57 @@ namespace dbe
 {
     internal class Column
     {
-        private string name;
-        private int dataType;
-        private int maxLength;
-        private string dataTypeName;
-        private DataTypeCategory dtCategory;
-        private string tableName;
-        private int tableId;
-        public int colId { get; set; }
+        public string Name { get; set; }
+        public int DataTypeID { get; set; }
+        public int MaxLength { get; set; }
+        public DataTypeCategory DataType { get; set; }
+        public string TableName { get; set; }
+        public int TableID { get; set; }
+
+        public int ColID { get; set; }
 
         public Column()
         {
 
         }
-        public Column(string name, int dataType, int maxLength, string tableName, int tableId, int colId)
+        public Column(string name, int dataTypeId, int maxLength, string tableName, int tableId, int colId)
         {
-            this.name = name;
-            this.dataType = dataType;
-            this.maxLength = maxLength;
-            this.tableName = tableName;
-            this.tableId = tableId;
-            this.colId = colId;
-            if (dataType == 40
-            || dataType == 42)
+            this.Name = name;
+            this.DataTypeID = dataTypeId;
+            this.MaxLength = maxLength;
+            this.TableName = tableName;
+            this.TableID = tableId;
+            this.ColID = colId;
+            if (dataTypeId == 40
+            || dataTypeId == 42)
             {
-                this.dtCategory = DataTypeCategory.Date;
+                this.DataType = DataTypeCategory.Date;
             }
-            else if(dataType == 35
-                 || dataType == 167
-                 || dataType == 231
-                 || dataType == 239)
+            else if(dataTypeId == 35
+                 || dataTypeId == 167
+                 || dataTypeId == 231
+                 || dataTypeId == 239)
             {
-                this.dtCategory = DataTypeCategory.String;
+                this.DataType = DataTypeCategory.String;
             }
-            else if (dataType == 48
-                 || dataType == 52
-                 || dataType == 56
-                 || dataType == 62
-                 || dataType == 106
-                 || dataType == 108)
+            else if (dataTypeId == 48
+                 || dataTypeId == 52
+                 || dataTypeId == 56
+                 || dataTypeId == 62
+                 || dataTypeId == 106
+                 || dataTypeId == 108)
             {
-                this.dtCategory = DataTypeCategory.Numeric;
+                this.DataType = DataTypeCategory.Numeric;
             }
             else
             {
-                this.dtCategory = DataTypeCategory.Unhandled;
+                this.DataType = DataTypeCategory.Unhandled;
             }
         }
-        public int getDataType() { return this.dataType; }
-        public void setDataTypeName(string dataTypeName) { this.dataTypeName = dataTypeName; }
-        public string Name
-        {
-            get { return this.name; }
-        }
-        public DataTypeCategory DTC
-        {
-            get { return this.dtCategory;  }
-        }
-        public int MaxLength
-        {
-            get { return this.maxLength; }
-        }
-        public string TableName
-        {
-            get { return this.tableName; }
-        }
-
-        public int TableID
-        {
-            get { return this.tableId; }
-        }
+        
         public string fullName()
         {
-            return this.tableName + "." + this.name;
+            return this.TableName + "." + this.Name;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace dbe
     public partial class LoginForm : Form
     {
         public string connString;
-        private List<string> databases = new List<string>();
+        private readonly List<string> databases = new List<string>();
 
         public LoginForm()
         {
