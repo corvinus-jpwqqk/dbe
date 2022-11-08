@@ -42,7 +42,7 @@ namespace dbe
         private void generateExercise()
         {
             getSelects(3);
-            getWhereClause();
+            whereBuilder(true);
             this.exerciseTextSQL += groupBy;
             checkExercise();
             //var f = functionBuilder(DataTypeCategory.String, 2);
@@ -87,7 +87,7 @@ namespace dbe
             this.exerciseTextSQL += ", ";
             Tuple<string, string> aggregateFunction = getAggregateFunction(ref usedColumns);
             this.exerciseTextSQL += aggregateFunction.Item1;
-            this.exerciseTextHun += aggregateFunction.Item2;
+            this.exerciseTextHun += aggregateFunction.Item2 + ". ";
             getFrom();
         }
 
@@ -159,7 +159,32 @@ namespace dbe
             }
             this.exerciseTextSQL += fromSql;
         }
-        public virtual void getWhereClause()
+
+        private void whereBuilder(bool combine)
+        {
+            this.exerciseTextSQL += "\nWHERE (";
+            this.exerciseTextHun += "Szűkítsd a lekérdezést a következőkre: ";
+            int usedCol = getWhereClause(-1);
+            this.exerciseTextSQL += ") ";
+            if (combine)
+            {
+                int type = rnd.Next(1);
+                if(type == 1)
+                {
+                    this.exerciseTextSQL += " AND (";
+                    this.exerciseTextHun += ", valamint ";
+                }
+                else
+                {
+                    this.exerciseTextSQL += " OR (";
+                    this.exerciseTextHun += ", vagy ";
+                }
+                getWhereClause(usedCol);
+                this.exerciseTextSQL += ") ";
+            }
+        }
+
+        public virtual int getWhereClause(int usedCol)
         {
             Random rnd = new Random();
             bool success = false;
@@ -171,7 +196,8 @@ namespace dbe
 
             while (!success)
             {
-                whereColumn = this.usedColumns[rnd.Next(usedColumns.Count)];
+                List<Column> availableColumns = this.usedColumns.Where(c => c.ColID != usedCol).ToList();
+                whereColumn = availableColumns[rnd.Next(availableColumns.Count)];
                 SqlCommand cmd;
                 try
                 {
@@ -217,6 +243,7 @@ namespace dbe
             {
                 getStringWhere(ref whereColumn);
             }
+            return whereColumn.ColID;
         }
 
         private void getNumericWhere(ref Column whereColumn, double minValue, double maxValue)
@@ -226,21 +253,21 @@ namespace dbe
             if(whereType == 0)
             {
                 int ltValue = rnd.Next((Convert.ToInt32(minValue) + Convert.ToInt32(maxValue)) / 2, Convert.ToInt32(maxValue));
-                this.exerciseTextSQL += "\nWHERE " + whereColumn.fullName() + "<" + ltValue.ToString() + " ";
-                this.exerciseTextHun += ", ahol a " + whereColumn.fullName() + " mező értéke kisebb, mint " + ltValue.ToString();
+                this.exerciseTextSQL += whereColumn.fullName() + "<" + ltValue.ToString();
+                this.exerciseTextHun += whereColumn.fullName() + " mező értéke kisebb, mint " + ltValue.ToString();
             }
             else if(whereType == 1)
             {
                 int gtValue = rnd.Next(Convert.ToInt32(minValue), (Convert.ToInt32(minValue) + Convert.ToInt32(maxValue)) / 2);
-                this.exerciseTextSQL += "\nWHERE " + whereColumn.fullName() + ">" + gtValue.ToString() + " ";
-                this.exerciseTextHun += ", ahol a " + whereColumn.fullName() + " mező értéke nagyobb, mint " + gtValue.ToString();
+                this.exerciseTextSQL += whereColumn.fullName() + ">" + gtValue.ToString();
+                this.exerciseTextHun += whereColumn.fullName() + " mező értéke nagyobb, mint " + gtValue.ToString();
             }
             else
             {
                 int btMin = rnd.Next(Convert.ToInt32(minValue), (Convert.ToInt32(minValue) + Convert.ToInt32(maxValue)) / 2);
                 int btMax = rnd.Next((Convert.ToInt32(minValue) + Convert.ToInt32(maxValue)) / 2, Convert.ToInt32(maxValue));
-                this.exerciseTextSQL += "\nWHERE " + whereColumn.fullName() + " BETWEEN " + btMin + " AND " + btMax + " ";
-                this.exerciseTextHun += ", ahol a " + whereColumn.fullName() + " mező értéke " + btMin.ToString() + " és " + btMax.ToString() + " közé esik ";
+                this.exerciseTextSQL += whereColumn.fullName() + " BETWEEN " + btMin + " AND " + btMax;
+                this.exerciseTextHun += whereColumn.fullName() + " mező értéke " + btMin.ToString() + " és " + btMax.ToString() + " közé esik";
             }
         }
         private void getDateWhere(ref Column whereColumn, DateTime minDate, DateTime maxDate)
@@ -251,21 +278,21 @@ namespace dbe
             if (whereType == 0)
             {
                 DateTime ltValue = minDate.AddDays(range/2 + rnd.Next(range/2));
-                this.exerciseTextSQL += "\nWHERE " + whereColumn.fullName() + "<'" + ltValue.ToString("yyyy-MM-dd") + "' ";
-                this.exerciseTextHun += ", ahol a " + whereColumn.fullName() + " mező értéke kisebb, mint " + ltValue.ToString("yyyy. MM. dd");
+                this.exerciseTextSQL += whereColumn.fullName() + "<'" + ltValue.ToString("yyyy-MM-dd") + "'";
+                this.exerciseTextHun += whereColumn.fullName() + " mező értéke kisebb, mint " + ltValue.ToString("yyyy. MM. dd");
             }
             else if (whereType == 1)
             {
                 DateTime gtValue = minDate.AddDays(rnd.Next(range/2));
-                this.exerciseTextSQL += "\nWHERE " + whereColumn.fullName() + ">'" + gtValue.ToString("yyyy-MM-dd") + "' ";
-                this.exerciseTextHun += ", ahol a " + whereColumn.fullName() + " mező értéke nagyobb, mint " + gtValue.ToString("yyyy. MM. dd");
+                this.exerciseTextSQL += whereColumn.fullName() + ">'" + gtValue.ToString("yyyy-MM-dd") + "'";
+                this.exerciseTextHun += whereColumn.fullName() + " mező értéke nagyobb, mint " + gtValue.ToString("yyyy. MM. dd");
             }
             else
             {
                 DateTime btMin = minDate.AddDays(Convert.ToInt32(range/4));
                 DateTime btMax = minDate.AddDays(Convert.ToInt32(range/2) + Convert.ToInt32(range / 4));
-                this.exerciseTextSQL += "\nWHERE " + whereColumn.fullName() + " BETWEEN '" + btMin.ToString("yyyy-MM-dd") + "' AND '" + btMax.ToString("yyyy-MM-dd") + "' ";
-                this.exerciseTextHun += ", ahol a " + whereColumn.fullName() + " mező értéke a " + btMin.ToString("yyyy. MM. dd") + " és " + btMax.ToString("yyyy. MM. dd") + " közé esik ";
+                this.exerciseTextSQL += whereColumn.fullName() + " BETWEEN '" + btMin.ToString("yyyy-MM-dd") + "' AND '" + btMax.ToString("yyyy-MM-dd") + "'";
+                this.exerciseTextHun += whereColumn.fullName() + " mező értéke a " + btMin.ToString("yyyy. MM. dd") + " és " + btMax.ToString("yyyy. MM. dd") + " közé esik";
             }
         }
         private void getStringWhere(ref Column whereColumn)
@@ -291,8 +318,8 @@ namespace dbe
                     MessageBox.Show("Error when getting where for string type / startswith cmd: " + ex.Message);
                     return;
                 }
-                this.exerciseTextSQL += "\nWHERE " + whereColumn.fullName() + " LIKE '" + startsWith + "%' ";
-                this.exerciseTextHun += ", ahol a " + whereColumn.fullName() + " mező így kezdődik: '" + startsWith + "' ";
+                this.exerciseTextSQL += whereColumn.fullName() + " LIKE '" + startsWith + "%'";
+                this.exerciseTextHun += whereColumn.fullName() + " mező így kezdődik: '" + startsWith + "'";
             }
             else if(whereType == 1)
             {
