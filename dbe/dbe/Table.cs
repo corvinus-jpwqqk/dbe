@@ -45,7 +45,7 @@ namespace dbe
             }
         }
 
-        public void getRelationSheeps(ref SqlConnection con)
+        public void getRelationShips(ref SqlConnection con)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace dbe
                         this.relations.Add(new Tuple<int, int, int>(pColId, rTableId, rColId));
                     }
                 }
-                cmd = new SqlCommand("SELECT referenced_column_id, parent_column_id, parent_object_id FROM sys.foreign_key_columns WHERE referenced_object_id=" + this.id, con);
+                cmd = new SqlCommand("SELECT referenced_column_id, parent_object_id, parent_column_id FROM sys.foreign_key_columns WHERE referenced_object_id=" + this.id, con);
                 using (IDataReader rdr = cmd.ExecuteReader())
                 {
                     while (rdr.Read())

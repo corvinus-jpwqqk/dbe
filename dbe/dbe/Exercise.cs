@@ -21,6 +21,7 @@ namespace dbe
         readonly Random rnd = new Random();
         readonly List<Table> tables;
         List<Column> usedColumns = new List<Column>();
+        List<Table> activeTables = new List<Table>();
         string groupBy = "";
 
         public Exercise(ref List<Table> tables, ref SqlConnection con, ref List<FunctionTemplate> templates)
@@ -40,7 +41,7 @@ namespace dbe
 
         private void generateExercise()
         {
-            getSelects();
+            getSelects(3);
             getWhereClause();
             this.exerciseTextSQL += groupBy;
             checkExercise();
@@ -58,12 +59,13 @@ namespace dbe
             return this.exerciseTextSQL;
         }
 
-        public virtual void getSelects()
+        public virtual void getSelects(int tableCount)
         {
             this.exerciseTextSQL += "SELECT ";
             this.exerciseTextHun += "Válaszd ki a(z) ";
             int max = 4;
-            foreach(Table table in this.tables)
+            getActiveTables(tableCount);
+            foreach(Table table in this.activeTables)
             {
                 foreach(Column col in table.columns)
                 {
@@ -89,17 +91,64 @@ namespace dbe
             getFrom();
         }
 
+        private void getActiveTables(int tableCount)
+        {
+            Console.WriteLine("GetActiveTables called");
+            if(this.activeTables.Count == 0)
+            {
+                this.activeTables.Add(this.tables[this.rnd.Next(this.tables.Count)]);
+                Console.WriteLine("Added random table to empty list");
+            }
+            else
+            {
+                Console.WriteLine("Calling AddRelatedTable");
+                addRelatedTable();
+            }
+            if(tableCount == 1)
+            {
+                Console.WriteLine("tc is 1, returning");
+                return;
+            }
+            else
+            {
+                Console.WriteLine("tc is not 1, calling GetActiveTables with " + (tableCount-1).ToString());
+                getActiveTables(tableCount - 1);
+            }
+        }
+
+        private void addRelatedTable()
+        {
+            List<int> addedTables = new List<int>();
+            foreach(Table t in this.activeTables)
+            {
+                addedTables.Add(t.id);
+            }
+            foreach(Table t in this.activeTables)
+            {
+                foreach(var relation in t.relations)
+                {
+                    if (!addedTables.Contains(relation.Item2))
+                    {
+                        var addTable = this.tables.Where(tbl => tbl.id == relation.Item2).ToList()[0];
+                        this.activeTables.Add(addTable);
+                        Console.WriteLine("Added table" + addTable.name);
+                        return;
+                    }
+                }
+            }
+        }
+
         private void getFrom()
         {
             List<int> connected = new List<int>();
-            string fromSql = "\nFROM " + tables[0].name;
-            foreach (Table table in this.tables)
+            string fromSql = "\nFROM " + activeTables[0].name;
+            foreach (Table table in this.activeTables)
             {
                 foreach (var relation in table.relations)
                 {
-                    if (tables.Where(t => t.id == relation.Item2).ToList().Count > 0 && !connected.Contains(relation.Item2))
+                    if (activeTables.Where(t => t.id == relation.Item2).ToList().Count > 0 && !connected.Contains(relation.Item2))
                     {
-                        Table relatedTable = tables.Where(t => t.id == relation.Item2).ToList()[0];
+                        Table relatedTable = activeTables.Where(t => t.id == relation.Item2).ToList()[0];
                         Column relatedColumn = relatedTable.columns.Where(c => c.ColID == relation.Item3).ToList()[0];
                         Column currentColumn = table.columns.Where(c => c.ColID == relation.Item1).ToList()[0];
                         fromSql += "\nJOIN " + relatedTable.name + " ON " + table.name + "." + currentColumn.Name + " = " + relatedTable.name + "." + relatedColumn.Name;
@@ -312,7 +361,15 @@ namespace dbe
         
         private Tuple<string, string> getAggregateFunction(ref List<Column> usedColumns)
         {
-            var currentColumn = this.columns[rnd.Next(this.columns.Count)];
+            List<Column> availableColumns = new List<Column>();
+            foreach(Table t in this.activeTables)
+            {
+                foreach(Column c in t.columns)
+                {
+                    availableColumns.Add(c);
+                }
+            }
+            var currentColumn = availableColumns[rnd.Next(availableColumns.Count)];
             List<Tuple<string, string>> aggregateFunctions = new List<Tuple<string, string>>
             {
                 new Tuple<string, string>("COUNT(DISTINCT ", " különböző értékeinek darabszáma "),

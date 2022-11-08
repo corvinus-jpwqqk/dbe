@@ -75,7 +75,7 @@ namespace dbe
             foreach (Table table in this.tables)
             {
                 table.fetchColumns(ref con);
-                table.getRelationSheeps(ref con);
+                table.getRelationShips(ref con);
             }
             lbTbl.DataSource = this.tables;
             lbTbl.DisplayMember = "Name";
