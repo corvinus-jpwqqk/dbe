@@ -44,6 +44,7 @@ namespace dbe
             getSelects(3);
             whereBuilder(true);
             this.exerciseTextSQL += groupBy;
+            getOrderBy();
             checkExercise();
             //var f = functionBuilder(DataTypeCategory.String, 2);
             //this.exerciseTextHun = f.FunctionTextHun;
@@ -93,25 +94,20 @@ namespace dbe
 
         private void getActiveTables(int tableCount)
         {
-            Console.WriteLine("GetActiveTables called");
             if(this.activeTables.Count == 0)
             {
                 this.activeTables.Add(this.tables[this.rnd.Next(this.tables.Count)]);
-                Console.WriteLine("Added random table to empty list");
             }
             else
             {
-                Console.WriteLine("Calling AddRelatedTable");
                 addRelatedTable();
             }
             if(tableCount == 1)
             {
-                Console.WriteLine("tc is 1, returning");
                 return;
             }
             else
             {
-                Console.WriteLine("tc is not 1, calling GetActiveTables with " + (tableCount-1).ToString());
                 getActiveTables(tableCount - 1);
             }
         }
@@ -131,7 +127,6 @@ namespace dbe
                     {
                         var addTable = this.tables.Where(tbl => tbl.id == relation.Item2).ToList()[0];
                         this.activeTables.Add(addTable);
-                        Console.WriteLine("Added table" + addTable.name);
                         return;
                     }
                 }
@@ -367,9 +362,7 @@ namespace dbe
                         if(param.ParamType == ParamType.Column)
                         {
                             var p = functionBuilder(param.DataType, depth - 1);
-                            //MessageBox.Show("created function for: " + p.FunctionTextSql + " , calling buildParam");
                             f.buildParam(param, p);
-                            //MessageBox.Show("called buildparam for: " + p.FunctionTextSql + ", here: " + f.FunctionTextSql);
                         }
                         else if(param.ParamType == ParamType.Random) 
                         {
@@ -380,7 +373,14 @@ namespace dbe
                     return f;
                 }
             }
-            var eligibleColumns = columns.Where(c => c.DataType == returnType).ToList();
+            List<Column> eligibleColumns = new List<Column>();
+            foreach(Table t in this.tables)
+            {
+                foreach(Column c in t.columns)
+                {
+                    if(c.DataType == returnType) { eligibleColumns.Add(c); }
+                }
+            }
             var usedColumn = eligibleColumns[rnd.Next(eligibleColumns.Count)];
             f = new Function(usedColumn.fullName());
             return f;
@@ -421,6 +421,25 @@ namespace dbe
             }
             hun += " alapján csoportosítva";
             return new Tuple<string, string>(sql, hun);
+        }
+        private void getOrderBy()
+        {
+            this.exerciseTextSQL += "\nORDER BY ";
+            this.exerciseTextHun += "Rendezd az eredményt ";
+            var obCol = this.usedColumns[rnd.Next(this.usedColumns.Count)];
+            this.exerciseTextSQL += obCol.fullName();
+            var direction = rnd.Next(1);
+            if(direction == 0)
+            {
+                this.exerciseTextSQL += " ASC ";
+                this.exerciseTextHun += "növekvő ";
+            }
+            else
+            {
+                this.exerciseTextSQL += " DESC ";
+                this.exerciseTextHun += "csökkenő ";
+            }
+            this.exerciseTextHun += "sorrendbe a(z) " + obCol.fullName() + " oszlop szerint!";
         }
     }
 }
