@@ -14,8 +14,8 @@ namespace dbe
         public DataTypeCategory DataType { get; set; }
         public string TableName { get; set; }
         public int TableID { get; set; }
-
         public int ColID { get; set; }
+        public string Description { get; set; }
 
         public Column()
         {
@@ -29,6 +29,7 @@ namespace dbe
             this.TableName = tableName;
             this.TableID = tableId;
             this.ColID = colId;
+            this.Description = "";
             if (dataTypeId == 40
             || dataTypeId == 42)
             {

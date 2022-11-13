@@ -34,6 +34,7 @@ namespace dbe
             this.button1 = new System.Windows.Forms.Button();
             this.txtHun = new System.Windows.Forms.TextBox();
             this.txtSql = new System.Windows.Forms.TextBox();
+            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPos)).BeginInit();
             this.SuspendLayout();
             // 
@@ -65,7 +66,7 @@ namespace dbe
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(141, 35);
             this.button1.TabIndex = 2;
-            this.button1.Text = "generate exercise 1";
+            this.button1.Text = "Generate";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -92,12 +93,24 @@ namespace dbe
             this.txtSql.Size = new System.Drawing.Size(784, 191);
             this.txtSql.TabIndex = 4;
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(13, 513);
+            this.button2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(141, 35);
+            this.button2.TabIndex = 5;
+            this.button2.Text = "Export XML";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(955, 559);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.txtSql);
             this.Controls.Add(this.txtHun);
             this.Controls.Add(this.button1);
@@ -118,6 +131,7 @@ namespace dbe
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox txtHun;
         private System.Windows.Forms.TextBox txtSql;
+        private System.Windows.Forms.Button button2;
     }
 }
 

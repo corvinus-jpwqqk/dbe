@@ -78,5 +78,18 @@ namespace dbe
                 return;
             }
         }
+        public void getDescriptions(ref List<Tuple<string, string, string>> descriptions)
+        {
+            foreach(Column col in this.columns)
+            {
+                foreach(var desc in descriptions)
+                {
+                    if(desc.Item1 == this.name && desc.Item2 == col.Name)
+                    {
+                        col.Description = desc.Item3;
+                    }
+                }
+            }
+        }
     }
 }
