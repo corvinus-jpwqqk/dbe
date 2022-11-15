@@ -18,7 +18,6 @@ namespace dbe
         private readonly SqlConnection con;
         private int checkCount = 0;
         readonly List<FunctionTemplate> templates;
-        private readonly List<Column> columns = new List<Column>();
         readonly Random rnd = new Random();
         readonly List<Table> tables;
         List<Column> usedColumns = new List<Column>();
@@ -30,28 +29,29 @@ namespace dbe
             this.con = con;
             this.tables = tables;
             this.templates = templates;
-            foreach(Table table in tables)
-            {
-                foreach(Column col in table.columns)
-                {
-                    this.columns.Add(col);
-                }
-            }
-            this.ExerciseTextHun = "";
-            this.ExerciseTextSQL = "";
             generateExercise();
         }
 
         private void generateExercise()
         {
-            getSelects(3);
-            whereBuilder(true);
-            this.ExerciseTextSQL += groupBy;
-            getOrderBy();
+            clearFields();
+            // getSelectColumns(3);
+            //whereBuilder(true);
+            //this.ExerciseTextSQL += groupBy;
+            buildSetOperation();
             checkExercise();
             //var f = functionBuilder(DataTypeCategory.String, 2);
             //this.exerciseTextHun = f.FunctionTextHun;
             //this.exerciseTextSQL = f.FunctionTextSQL;
+        }
+
+        private void clearFields()
+        {
+            this.ExerciseTextHun = "";
+            this.ExerciseTextSQL = "";
+            this.activeTables.Clear();
+            this.usedColumns.Clear();
+            this.groupBy = "";
         }
 
         public string getExerciseHun()
@@ -63,10 +63,21 @@ namespace dbe
             return this.ExerciseTextSQL;
         }
 
-        public virtual void getSelects(int tableCount)
+        private void createSelect()
         {
             this.ExerciseTextSQL += "SELECT ";
             this.ExerciseTextHun += "Válaszd ki a(z) ";
+            for (int i = 0; i < usedColumns.Count - 1; i++)
+            {
+                this.ExerciseTextSQL += usedColumns[i].fullName() + ", ";
+                this.ExerciseTextHun += usedColumns[i].fullName() + ", ";
+            }
+            this.ExerciseTextSQL += usedColumns[usedColumns.Count - 1].fullName();
+            this.ExerciseTextHun += usedColumns[usedColumns.Count - 1].fullName() + " oszlopokat";
+        }
+
+        public virtual void getSelectColumns(int tableCount)
+        {
             int max = 4;
             getActiveTables(tableCount);
             foreach(Table table in this.activeTables)
@@ -80,13 +91,7 @@ namespace dbe
                     }
                 }
             }
-            for (int i = 0; i < usedColumns.Count-1; i++)
-            {
-                this.ExerciseTextSQL += usedColumns[i].fullName() + ", ";
-                this.ExerciseTextHun += usedColumns[i].fullName() + ", ";
-            }
-            this.ExerciseTextSQL += usedColumns[usedColumns.Count - 1].fullName();
-            this.ExerciseTextHun += usedColumns[usedColumns.Count - 1].fullName() + " oszlopokat";
+            createSelect();
             this.ExerciseTextHun += ", valamint a következőt: ";
             this.ExerciseTextSQL += ", ";
             Tuple<string, string> aggregateFunction = getAggregateFunction(ref usedColumns);
@@ -95,8 +100,10 @@ namespace dbe
             getFrom();
         }
 
-        private void getSelects(List<DataTypeCategory> colReturnTypes)
+        private void getSelectColumns(List<DataTypeCategory> colReturnTypes)
         {
+            this.usedColumns.Clear();
+            this.activeTables.Clear();
             List<Column> eligibleColumns = new List<Column>();
             foreach(Table t in this.tables)
             {
@@ -109,46 +116,43 @@ namespace dbe
                 }
             }
             var firstCol = eligibleColumns[rnd.Next(eligibleColumns.Count)];
-            this.activeTables.Add(this.tables.Where(t => t.id == firstCol.TableID).ToList()[0]);
+            usedColumns.Add(firstCol);
+            var firstTable = this.tables.Where(t => t.id == firstCol.TableID).ToList()[0];
+            this.activeTables.Add(firstTable);
             for(int i = 1; i < colReturnTypes.Count; i++)
             {
-                nemtom(colReturnTypes[i]);
+                checkNeighbours(firstTable, colReturnTypes[i]);
             }
+            createSelect();
+            getFrom();
         }
 
-        private bool nemtom(DataTypeCategory returnType)
+        private bool checkNeighbours(Table origin, DataTypeCategory returnType)
         {
-            List<Column> eligibleColumns = new List<Column>();
-            foreach(Table t in this.activeTables)
+            foreach(var relation in origin.relations)
             {
-                foreach (Column c in t.columns)
+                Table relatedTable = this.tables.Where(t => t.id == relation.Item2).ToList()[0];
+                var eligibleColumns = relatedTable.columns.Where(c => c.DataType == returnType).ToList();
+                if(eligibleColumns.Count > 0)
                 {
-                    if(c.DataType == returnType)
+                    var newCol = eligibleColumns[rnd.Next(eligibleColumns.Count)];
+                    usedColumns.Add(newCol);
+                    var newColTable = this.tables.Where(t => t.id == newCol.TableID).ToList()[0];
+                    if (!activeTables.Contains(newColTable))
                     {
-                        eligibleColumns.Add(c);
+                        activeTables.Add(newColTable);
                     }
+                    return true;
                 }
             }
-            if(eligibleColumns.Count == 0)
+            foreach (var relation in origin.relations)
             {
-                foreach(Table t in this.activeTables)
+                if(checkNeighbours(this.tables.Where(t => t.id == relation.Item2).ToList()[0], returnType))
                 {
-                    foreach(var relation in t.relations)
-                    {
-                        //add table to active ones
-                        // if(nemtom(returnType)){
-                        // this.activeTables.pop();
-                        // 
-                    }
+                    return true;
                 }
-                return false;
             }
-            else
-            {
-                Column newCol = eligibleColumns[rnd.Next(eligibleColumns.Count)];
-                this.usedColumns.Add(newCol);
-                return true;
-            }
+            return false;
         }
         
         private void getActiveTables(int tableCount)
@@ -192,22 +196,78 @@ namespace dbe
             }
         }
 
+        private void buildSetOperation()
+        {
+            int type = rnd.Next(2);
+            List<DataTypeCategory> columnTypes = new List<DataTypeCategory>();
+            int colCount = rnd.Next(2, 5);
+            for(int i = 0; i < colCount; i++)
+            {
+                columnTypes.Add(getRandomReturnType());
+            }
+            string connectHun;
+            string connectSql;
+            if (type == 0)
+            {
+                connectHun = "únióját";
+                connectSql = "UNION";
+
+            }
+            else if(type == 1)
+            {
+                connectHun = "metszetét";
+                connectSql = "INTERSECT";
+            }
+            else
+            {
+                connectHun = "különbségét";
+                connectSql = "EXCEPT";
+            }
+            this.ExerciseTextHun += "Készítsd el a következő két lekérdezés " + connectHun + ": \n";
+            getSelectColumns(columnTypes);
+            whereBuilder(false);
+            this.ExerciseTextHun += "\nvalamint \n";
+            this.ExerciseTextSQL += "\n" + connectSql + "\n";
+            getSelectColumns(columnTypes);
+            //whereBuilder(false);
+        }
+
+        private DataTypeCategory getRandomReturnType()
+        {
+            int type = rnd.Next(2);
+            if(type == 0)
+            {
+                return DataTypeCategory.String;
+            }
+            else if (type == 1)
+            {
+                return DataTypeCategory.Numeric;
+            }
+            else
+            {
+                return DataTypeCategory.Date;
+            }
+        }
+
         private void getFrom()
         {
             List<int> connected = new List<int>();
             string fromSql = "\nFROM " + activeTables[0].name;
-            foreach (Table table in this.activeTables)
+            while(connected.Count < activeTables.Count)
             {
-                foreach (var relation in table.relations)
+                foreach (Table table in this.activeTables)
                 {
-                    if (activeTables.Where(t => t.id == relation.Item2).ToList().Count > 0 && !connected.Contains(relation.Item2))
+                    foreach (var relation in table.relations)
                     {
-                        Table relatedTable = activeTables.Where(t => t.id == relation.Item2).ToList()[0];
-                        Column relatedColumn = relatedTable.columns.Where(c => c.ColID == relation.Item3).ToList()[0];
-                        Column currentColumn = table.columns.Where(c => c.ColID == relation.Item1).ToList()[0];
-                        fromSql += "\nJOIN " + relatedTable.name + " ON " + table.name + "." + currentColumn.Name + " = " + relatedTable.name + "." + relatedColumn.Name;
-                        connected.Add(table.id);
-                        connected.Add(relatedTable.id);
+                        if (activeTables.Where(t => t.id == relation.Item2).ToList().Count > 0 && !connected.Contains(relation.Item2))
+                        {
+                            Table relatedTable = activeTables.Where(t => t.id == relation.Item2).ToList()[0];
+                            Column relatedColumn = relatedTable.columns.Where(c => c.ColID == relation.Item3).ToList()[0];
+                            Column currentColumn = table.columns.Where(c => c.ColID == relation.Item1).ToList()[0];
+                            fromSql += "\nJOIN " + relatedTable.name + " ON " + table.name + "." + currentColumn.Name + " = " + relatedTable.name + "." + relatedColumn.Name;
+                            connected.Add(table.id);
+                            connected.Add(relatedTable.id);
+                        }
                     }
                 }
             }
@@ -217,7 +277,7 @@ namespace dbe
         private void whereBuilder(bool combine)
         {
             this.ExerciseTextSQL += "\nWHERE (";
-            this.ExerciseTextHun += "Szűkítsd a lekérdezést a következőkre: ";
+            this.ExerciseTextHun += "\nSzűkítsd a lekérdezést a következőkre: ";
             int usedCol = getWhereClause(-1);
             this.ExerciseTextSQL += ") ";
             if (combine)
@@ -382,7 +442,7 @@ namespace dbe
         }
         private void checkExercise()
         {
-            if(checkCount > 3)
+            if (checkCount > 5)
             {
                 MessageBox.Show("Could not generate exercise");
             }
