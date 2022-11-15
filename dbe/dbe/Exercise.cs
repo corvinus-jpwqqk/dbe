@@ -220,7 +220,7 @@ namespace dbe
             this.ExerciseTextHun += "\nvalamint \n";
             this.ExerciseTextSQL += "\n" + connectSql + "\n";
             getSelectColumns(columnTypes);
-            //whereBuilder(false);
+            //whereBuilder(false, true);
         }
 
         private DataTypeCategory getRandomReturnType()
