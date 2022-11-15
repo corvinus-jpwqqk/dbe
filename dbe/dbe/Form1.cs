@@ -119,7 +119,12 @@ namespace dbe
 
         private void button1_Click(object sender, EventArgs e)
         {
-            currentExercise = new Exercise(ref this.tables, ref this.con, ref this.templates);
+            //currentExercise = new SingleTableEx(ref tables, ref con, ref templates);
+            //currentExercise = new AggregateFunctionEx(ref tables, ref con, ref templates);
+            //currentExercise = new FunctionsEx(ref tables, ref con, ref templates);
+            //currentExercise = new MultiTableEx(ref tables, ref con, ref templates);
+            currentExercise = new SetOperationEx(ref tables, ref con, ref templates);
+
             txtHun.Text = currentExercise.getExerciseHun().Replace("\n", Environment.NewLine);
             txtSql.Text = currentExercise.getExerciseSql().Replace("\n", Environment.NewLine);
 

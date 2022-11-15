@@ -35,11 +35,11 @@ namespace dbe
             this.txtHun = new System.Windows.Forms.TextBox();
             this.txtSql = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
-            this.checkBox5 = new System.Windows.Forms.CheckBox();
+            this.cbSingleTable = new System.Windows.Forms.CheckBox();
+            this.cbFunctions = new System.Windows.Forms.CheckBox();
+            this.cbAggrFunctions = new System.Windows.Forms.CheckBox();
+            this.cbMultiTable = new System.Windows.Forms.CheckBox();
+            this.cbSetOperation = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPos)).BeginInit();
             this.SuspendLayout();
             // 
@@ -109,55 +109,55 @@ namespace dbe
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // checkBox1
+            // cbSingleTable
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(12, 292);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(109, 21);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "Single Table";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.cbSingleTable.AutoSize = true;
+            this.cbSingleTable.Location = new System.Drawing.Point(12, 292);
+            this.cbSingleTable.Name = "cbSingleTable";
+            this.cbSingleTable.Size = new System.Drawing.Size(109, 21);
+            this.cbSingleTable.TabIndex = 6;
+            this.cbSingleTable.Text = "Single Table";
+            this.cbSingleTable.UseVisualStyleBackColor = true;
             // 
-            // checkBox2
+            // cbFunctions
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(12, 319);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(91, 21);
-            this.checkBox2.TabIndex = 7;
-            this.checkBox2.Text = "Functions";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.cbFunctions.AutoSize = true;
+            this.cbFunctions.Location = new System.Drawing.Point(12, 319);
+            this.cbFunctions.Name = "cbFunctions";
+            this.cbFunctions.Size = new System.Drawing.Size(91, 21);
+            this.cbFunctions.TabIndex = 7;
+            this.cbFunctions.Text = "Functions";
+            this.cbFunctions.UseVisualStyleBackColor = true;
             // 
-            // checkBox3
+            // cbAggrFunctions
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(12, 346);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(161, 21);
-            this.checkBox3.TabIndex = 8;
-            this.checkBox3.Text = "Aggregate Functions";
-            this.checkBox3.UseVisualStyleBackColor = true;
+            this.cbAggrFunctions.AutoSize = true;
+            this.cbAggrFunctions.Location = new System.Drawing.Point(12, 346);
+            this.cbAggrFunctions.Name = "cbAggrFunctions";
+            this.cbAggrFunctions.Size = new System.Drawing.Size(161, 21);
+            this.cbAggrFunctions.TabIndex = 8;
+            this.cbAggrFunctions.Text = "Aggregate Functions";
+            this.cbAggrFunctions.UseVisualStyleBackColor = true;
             // 
-            // checkBox4
+            // cbMultiTable
             // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(12, 373);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(125, 21);
-            this.checkBox4.TabIndex = 9;
-            this.checkBox4.Text = "Multiple Tables";
-            this.checkBox4.UseVisualStyleBackColor = true;
+            this.cbMultiTable.AutoSize = true;
+            this.cbMultiTable.Location = new System.Drawing.Point(12, 373);
+            this.cbMultiTable.Name = "cbMultiTable";
+            this.cbMultiTable.Size = new System.Drawing.Size(125, 21);
+            this.cbMultiTable.TabIndex = 9;
+            this.cbMultiTable.Text = "Multiple Tables";
+            this.cbMultiTable.UseVisualStyleBackColor = true;
             // 
-            // checkBox5
+            // cbSetOperation
             // 
-            this.checkBox5.AutoSize = true;
-            this.checkBox5.Location = new System.Drawing.Point(12, 400);
-            this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(125, 21);
-            this.checkBox5.TabIndex = 10;
-            this.checkBox5.Text = "Set Operations";
-            this.checkBox5.UseVisualStyleBackColor = true;
+            this.cbSetOperation.AutoSize = true;
+            this.cbSetOperation.Location = new System.Drawing.Point(12, 400);
+            this.cbSetOperation.Name = "cbSetOperation";
+            this.cbSetOperation.Size = new System.Drawing.Size(125, 21);
+            this.cbSetOperation.TabIndex = 10;
+            this.cbSetOperation.Text = "Set Operations";
+            this.cbSetOperation.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -165,11 +165,11 @@ namespace dbe
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(955, 559);
-            this.Controls.Add(this.checkBox5);
-            this.Controls.Add(this.checkBox4);
-            this.Controls.Add(this.checkBox3);
-            this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.cbSetOperation);
+            this.Controls.Add(this.cbMultiTable);
+            this.Controls.Add(this.cbAggrFunctions);
+            this.Controls.Add(this.cbFunctions);
+            this.Controls.Add(this.cbSingleTable);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.txtSql);
             this.Controls.Add(this.txtHun);
@@ -192,11 +192,11 @@ namespace dbe
         private System.Windows.Forms.TextBox txtHun;
         private System.Windows.Forms.TextBox txtSql;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.CheckBox checkBox4;
-        private System.Windows.Forms.CheckBox checkBox5;
+        private System.Windows.Forms.CheckBox cbSingleTable;
+        private System.Windows.Forms.CheckBox cbFunctions;
+        private System.Windows.Forms.CheckBox cbAggrFunctions;
+        private System.Windows.Forms.CheckBox cbMultiTable;
+        private System.Windows.Forms.CheckBox cbSetOperation;
     }
 }
 

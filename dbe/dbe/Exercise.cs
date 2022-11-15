@@ -11,20 +11,20 @@ using System.Xml;
 
 namespace dbe
 {
-    class Exercise
+    abstract class Exercise
     {
         public string ExerciseTextHun { get; set; }
         public string ExerciseTextSQL { get; set; }
-        private readonly SqlConnection con;
+        protected readonly SqlConnection con;
         private int checkCount = 0;
-        readonly List<FunctionTemplate> templates;
-        readonly Random rnd = new Random();
-        readonly List<Table> tables;
-        List<Column> usedColumns = new List<Column>();
-        List<Table> activeTables = new List<Table>();
-        string groupBy = "";
+        protected readonly List<FunctionTemplate> templates;
+        protected readonly Random rnd = new Random();
+        protected readonly List<Table> tables;
+        protected List<Column> usedColumns = new List<Column>();
+        protected List<Table> activeTables = new List<Table>();
+        protected string groupBy = "";
 
-        public Exercise(ref List<Table> tables, ref SqlConnection con, ref List<FunctionTemplate> templates)
+        protected Exercise(ref List<Table> tables, ref SqlConnection con, ref List<FunctionTemplate> templates)
         {
             this.con = con;
             this.tables = tables;
@@ -32,20 +32,9 @@ namespace dbe
             generateExercise();
         }
 
-        private void generateExercise()
-        {
-            clearFields();
-            // getSelectColumns(3);
-            //whereBuilder(true);
-            //this.ExerciseTextSQL += groupBy;
-            buildSetOperation();
-            checkExercise();
-            //var f = functionBuilder(DataTypeCategory.String, 2);
-            //this.exerciseTextHun = f.FunctionTextHun;
-            //this.exerciseTextSQL = f.FunctionTextSQL;
-        }
+        protected virtual void generateExercise() { }
 
-        private void clearFields()
+        protected void clearFields()
         {
             this.ExerciseTextHun = "";
             this.ExerciseTextSQL = "";
@@ -78,26 +67,28 @@ namespace dbe
 
         public virtual void getSelectColumns(int tableCount)
         {
-            int max = 4;
+            int colCount = rnd.Next(2, 5);
             getActiveTables(tableCount);
-            foreach(Table table in this.activeTables)
+            while(colCount > 0)
             {
-                foreach(Column col in table.columns)
+                foreach (Table table in this.activeTables)
                 {
-                    if(rnd.Next(2) == 1 && max > 0)
+                    foreach (Column col in table.columns)
                     {
-                        this.usedColumns.Add(col);
-                        max -= 1;
+                        if (rnd.Next(2) == 1 && colCount > 0)
+                        {
+                            this.usedColumns.Add(col);
+                            var colTable = this.tables.Where(t => t.id == col.TableID).ToList()[0];
+                            if (!this.activeTables.Contains(colTable))
+                            {
+                                this.activeTables.Add(colTable);
+                            }
+                            colCount -= 1;
+                        }
                     }
                 }
             }
             createSelect();
-            this.ExerciseTextHun += ", valamint a következőt: ";
-            this.ExerciseTextSQL += ", ";
-            Tuple<string, string> aggregateFunction = getAggregateFunction(ref usedColumns);
-            this.ExerciseTextSQL += aggregateFunction.Item1;
-            this.ExerciseTextHun += aggregateFunction.Item2 + ". ";
-            getFrom();
         }
 
         private void getSelectColumns(List<DataTypeCategory> colReturnTypes)
@@ -196,7 +187,7 @@ namespace dbe
             }
         }
 
-        private void buildSetOperation()
+        protected void buildSetOperation()
         {
             int type = rnd.Next(2);
             List<DataTypeCategory> columnTypes = new List<DataTypeCategory>();
@@ -225,7 +216,7 @@ namespace dbe
             }
             this.ExerciseTextHun += "Készítsd el a következő két lekérdezés " + connectHun + ": \n";
             getSelectColumns(columnTypes);
-            whereBuilder(false);
+            whereBuilder(false, false);
             this.ExerciseTextHun += "\nvalamint \n";
             this.ExerciseTextSQL += "\n" + connectSql + "\n";
             getSelectColumns(columnTypes);
@@ -249,24 +240,27 @@ namespace dbe
             }
         }
 
-        private void getFrom()
+        protected void getFrom()
         {
             List<int> connected = new List<int>();
             string fromSql = "\nFROM " + activeTables[0].name;
-            while(connected.Count < activeTables.Count)
+            if (activeTables.Count > 1)
             {
-                foreach (Table table in this.activeTables)
+                while (connected.Count < activeTables.Count)
                 {
-                    foreach (var relation in table.relations)
+                    foreach (Table table in this.activeTables)
                     {
-                        if (activeTables.Where(t => t.id == relation.Item2).ToList().Count > 0 && !connected.Contains(relation.Item2))
+                        foreach (var relation in table.relations)
                         {
-                            Table relatedTable = activeTables.Where(t => t.id == relation.Item2).ToList()[0];
-                            Column relatedColumn = relatedTable.columns.Where(c => c.ColID == relation.Item3).ToList()[0];
-                            Column currentColumn = table.columns.Where(c => c.ColID == relation.Item1).ToList()[0];
-                            fromSql += "\nJOIN " + relatedTable.name + " ON " + table.name + "." + currentColumn.Name + " = " + relatedTable.name + "." + relatedColumn.Name;
-                            connected.Add(table.id);
-                            connected.Add(relatedTable.id);
+                            if (activeTables.Where(t => t.id == relation.Item2).ToList().Count > 0 && !connected.Contains(relation.Item2))
+                            {
+                                Table relatedTable = activeTables.Where(t => t.id == relation.Item2).ToList()[0];
+                                Column relatedColumn = relatedTable.columns.Where(c => c.ColID == relation.Item3).ToList()[0];
+                                Column currentColumn = table.columns.Where(c => c.ColID == relation.Item1).ToList()[0];
+                                fromSql += "\nJOIN " + relatedTable.name + " ON " + table.name + "." + currentColumn.Name + " = " + relatedTable.name + "." + relatedColumn.Name;
+                                connected.Add(table.id);
+                                connected.Add(relatedTable.id);
+                            }
                         }
                     }
                 }
@@ -274,7 +268,7 @@ namespace dbe
             this.ExerciseTextSQL += fromSql;
         }
 
-        private void whereBuilder(bool combine)
+        protected void whereBuilder(bool combine, bool allowDuplicates)
         {
             this.ExerciseTextSQL += "\nWHERE (";
             this.ExerciseTextHun += "\nSzűkítsd a lekérdezést a következőkre: ";
@@ -293,7 +287,15 @@ namespace dbe
                     this.ExerciseTextSQL += " OR (";
                     this.ExerciseTextHun += ", vagy ";
                 }
-                getWhereClause(usedCol);
+                if (allowDuplicates)
+                {
+                    getWhereClause(-1);
+                }
+                else
+                {
+                    getWhereClause(usedCol);
+                }
+                
                 this.ExerciseTextSQL += ") ";
             }
         }
@@ -311,6 +313,10 @@ namespace dbe
             while (!success)
             {
                 List<Column> availableColumns = this.usedColumns.Where(c => c.ColID != usedCol).ToList();
+                if(availableColumns.Count == 0)
+                {
+                    generateExercise();
+                }
                 whereColumn = availableColumns[rnd.Next(availableColumns.Count)];
                 SqlCommand cmd;
                 try
@@ -440,9 +446,9 @@ namespace dbe
                 //like...
             }
         }
-        private void checkExercise()
+        protected void checkExercise()
         {
-            if (checkCount > 5)
+            if (checkCount > 100)
             {
                 MessageBox.Show("Could not generate exercise");
             }
@@ -452,12 +458,20 @@ namespace dbe
                 Console.WriteLine("Checking sql: " + this.ExerciseTextSQL);
                 SqlCommand cmd = new SqlCommand(this.ExerciseTextSQL, con);
                 int lineCount = 0;
-                using (IDataReader rdr = cmd.ExecuteReader())
+                try
                 {
-                    while (rdr.Read())
+                    using (IDataReader rdr = cmd.ExecuteReader())
                     {
-                        lineCount++;
+                        while (rdr.Read())
+                        {
+                            lineCount++;
+                        }
                     }
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Invalid SQL command, retrying ");
+                    generateExercise();
                 }
                 if (lineCount == 0)
                 {
@@ -467,7 +481,7 @@ namespace dbe
                 Console.WriteLine("Checking successful, line count: " + lineCount.ToString());
             }
         }
-        private Function functionBuilder(DataTypeCategory returnType, int depth)
+        protected Function functionBuilder(DataTypeCategory returnType, int depth)
         {
             Function f;
             if(depth > 0)
@@ -493,19 +507,27 @@ namespace dbe
                 }
             }
             List<Column> eligibleColumns = new List<Column>();
-            foreach(Table t in this.tables)
+            foreach(Table t in this.activeTables)
             {
                 foreach(Column c in t.columns)
                 {
                     if(c.DataType == returnType) { eligibleColumns.Add(c); }
                 }
             }
-            var usedColumn = eligibleColumns[rnd.Next(eligibleColumns.Count)];
-            f = new Function(usedColumn.fullName());
-            return f;
+            if(eligibleColumns.Count > 0)
+            {
+                var usedColumn = eligibleColumns[rnd.Next(eligibleColumns.Count)];
+                f = new Function(usedColumn.fullName());
+                return f;
+            }
+            else
+            {
+                return new Function("ERROR: Could not generate function");
+            }
+            
         }
         
-        private Tuple<string, string> getAggregateFunction(ref List<Column> usedColumns)
+        protected Tuple<string, string> getAggregateFunction(ref List<Column> usedColumns)
         {
             List<Column> availableColumns = new List<Column>();
             foreach(Table t in this.activeTables)
