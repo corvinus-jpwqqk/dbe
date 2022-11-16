@@ -40,10 +40,14 @@ namespace dbe
             this.cbAggrFunctions = new System.Windows.Forms.CheckBox();
             this.cbMultiTable = new System.Windows.Forms.CheckBox();
             this.cbSetOperation = new System.Windows.Forms.CheckBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.nUDexCount = new System.Windows.Forms.NumericUpDown();
             this.lblExCount = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.cbMarked = new System.Windows.Forms.CheckBox();
+            this.lblExNo = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPos)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUDexCount)).BeginInit();
             this.SuspendLayout();
             // 
             // lbTbl
@@ -162,13 +166,13 @@ namespace dbe
             this.cbSetOperation.Text = "Set Operations";
             this.cbSetOperation.UseVisualStyleBackColor = true;
             // 
-            // numericUpDown1
+            // nUDexCount
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(14, 373);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(120, 22);
-            this.numericUpDown1.TabIndex = 11;
-            this.numericUpDown1.Value = new decimal(new int[] {
+            this.nUDexCount.Location = new System.Drawing.Point(14, 373);
+            this.nUDexCount.Name = "nUDexCount";
+            this.nUDexCount.Size = new System.Drawing.Size(120, 22);
+            this.nUDexCount.TabIndex = 11;
+            this.nUDexCount.Value = new decimal(new int[] {
             10,
             0,
             0,
@@ -183,14 +187,58 @@ namespace dbe
             this.lblExCount.TabIndex = 12;
             this.lblExCount.Text = "Feladatok száma:";
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(560, 517);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(39, 34);
+            this.button2.TabIndex = 13;
+            this.button2.Text = ">";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click_1);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(515, 517);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(39, 34);
+            this.button3.TabIndex = 14;
+            this.button3.Text = "<";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // cbMarked
+            // 
+            this.cbMarked.AutoSize = true;
+            this.cbMarked.Location = new System.Drawing.Point(605, 525);
+            this.cbMarked.Name = "cbMarked";
+            this.cbMarked.Size = new System.Drawing.Size(125, 21);
+            this.cbMarked.TabIndex = 15;
+            this.cbMarked.Text = "Mark for export";
+            this.cbMarked.UseVisualStyleBackColor = true;
+            this.cbMarked.CheckedChanged += new System.EventHandler(this.cbMarked_CheckedChanged);
+            // 
+            // lblExNo
+            // 
+            this.lblExNo.AutoSize = true;
+            this.lblExNo.Location = new System.Drawing.Point(447, 526);
+            this.lblExNo.Name = "lblExNo";
+            this.lblExNo.Size = new System.Drawing.Size(46, 17);
+            this.lblExNo.TabIndex = 16;
+            this.lblExNo.Text = "label1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(955, 559);
+            this.Controls.Add(this.lblExNo);
+            this.Controls.Add(this.cbMarked);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.lblExCount);
-            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.nUDexCount);
             this.Controls.Add(this.cbSetOperation);
             this.Controls.Add(this.cbMultiTable);
             this.Controls.Add(this.cbAggrFunctions);
@@ -205,7 +253,7 @@ namespace dbe
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.dgvPos)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUDexCount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -224,8 +272,12 @@ namespace dbe
         private System.Windows.Forms.CheckBox cbAggrFunctions;
         private System.Windows.Forms.CheckBox cbMultiTable;
         private System.Windows.Forms.CheckBox cbSetOperation;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown nUDexCount;
         private System.Windows.Forms.Label lblExCount;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.CheckBox cbMarked;
+        private System.Windows.Forms.Label lblExNo;
     }
 }
 

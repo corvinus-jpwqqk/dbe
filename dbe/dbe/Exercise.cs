@@ -23,12 +23,14 @@ namespace dbe
         protected List<Column> usedColumns = new List<Column>();
         protected List<Table> activeTables = new List<Table>();
         protected string groupBy = "";
+        public bool Marked { get; set; }
 
         protected Exercise(ref List<Table> tables, ref SqlConnection con, ref List<FunctionTemplate> templates)
         {
             this.con = con;
             this.tables = tables;
             this.templates = templates;
+            this.Marked = true;
             generateExercise();
         }
 

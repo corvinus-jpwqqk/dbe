@@ -32,7 +32,8 @@ namespace dbe
         SqlConnection con;
         SqlCommand cmd;
         List<FunctionTemplate> templates = new List<FunctionTemplate>();
-        Exercise currentExercise;
+        List<Exercise> generatedExercises = new List<Exercise>();
+        int currentExercise = 0;
 
         public Form1()
         {
@@ -119,22 +120,60 @@ namespace dbe
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //currentExercise = new SingleTableEx(ref tables, ref con, ref templates);
-            //currentExercise = new AggregateFunctionEx(ref tables, ref con, ref templates);
-            //currentExercise = new FunctionsEx(ref tables, ref con, ref templates);
-            //currentExercise = new MultiTableEx(ref tables, ref con, ref templates);
-            currentExercise = new SetOperationEx(ref tables, ref con, ref templates);
+            int exerciseCount = Convert.ToInt32(nUDexCount.Value);
+            if (cbSingleTable.Checked)
+            {
+                for (int i = 0; i < exerciseCount; i++)
+                {
+                    generatedExercises.Add(new SingleTableEx(ref this.tables, ref con, ref templates));
+                }
+            }
+            if (cbFunctions.Checked)
+            {
+                for (int i = 0; i < exerciseCount; i++)
+                {
+                    generatedExercises.Add(new FunctionsEx(ref this.tables, ref con, ref templates));
+                }
+            }
+            if (cbAggrFunctions.Checked)
+            {
+                for (int i = 0; i < exerciseCount; i++)
+                {
+                    generatedExercises.Add(new AggregateFunctionEx(ref this.tables, ref con, ref templates));
+                }
+            }
+            if (cbMultiTable.Checked)
+            {
+                for (int i = 0; i < exerciseCount; i++)
+                {
+                    generatedExercises.Add(new MultiTableEx(ref this.tables, ref con, ref templates));
+                }
+            }
+            if (cbSetOperation.Checked)
+            {
+                for (int i = 0; i < exerciseCount; i++)
+                {
+                    generatedExercises.Add(new SetOperationEx(ref this.tables, ref con, ref templates));
+                }
+            }
+            showExercise();
+        }
 
-            txtHun.Text = currentExercise.getExerciseHun().Replace("\n", Environment.NewLine);
-            txtSql.Text = currentExercise.getExerciseSql().Replace("\n", Environment.NewLine);
+        private void showExercise()
+        {
+            lblExNo.Text = (currentExercise + 1).ToString() + " / " + generatedExercises.Count.ToString();
+            cbMarked.Checked = (generatedExercises[currentExercise].Marked) ? true : false;
+            txtHun.Text = generatedExercises[currentExercise].getExerciseHun().Replace("\n", Environment.NewLine);
+            txtSql.Text = generatedExercises[currentExercise].getExerciseSql().Replace("\n", Environment.NewLine);
 
-            var select = currentExercise.getExerciseSql();
+            var select = generatedExercises[currentExercise].getExerciseSql();
             var dataAdapter = new SqlDataAdapter(select, this.con);
             var ds = new DataSet();
             dataAdapter.Fill(ds);
             dgvPos.ReadOnly = true;
             dgvPos.DataSource = ds.Tables[0];
         }
+
         private void getFunctionTemplates()
         {
             this.templates.Add(new FunctionTemplate(DataTypeCategory.String, "LEFT([String s col], [Numeric n rnd])", "[s] első [n] karaktere"));
@@ -178,29 +217,30 @@ namespace dbe
                 using (XmlWriter wr = XmlWriter.Create(filepath, settings))
                 {
                     wr.WriteStartElement("quiz");
-                    wr.WriteStartElement("question");
-                    wr.WriteAttributeString("type", "essay");
-                    wr.WriteStartElement("name");
-                    wr.WriteElementString("text", "Exercise01"); // exercise name
-                    wr.WriteEndElement();
-                    wr.WriteStartElement("questiontext");
-                    wr.WriteAttributeString("format", "html");
-                    wr.WriteStartElement("text");
-                    wr.WriteCData(currentExercise.ExerciseTextHun);
-                    wr.WriteEndElement();
-                    wr.WriteEndElement();
-                    wr.WriteStartElement("generalfeedback");
-                    wr.WriteAttributeString("format", "html");
-                    wr.WriteStartElement("text");
-                    wr.WriteCData(currentExercise.ExerciseTextSQL);
-                    wr.WriteEndElement();
-                    wr.WriteEndElement();
-                    wr.WriteElementString("responseformat", "plain");
-                    wr.WriteElementString("responserequired", "1");
-                    wr.WriteElementString("responsefieldlines", "3");
-                    wr.WriteEndElement();
-
-
+                    foreach (Exercise ex in generatedExercises)
+                    {
+                        wr.WriteStartElement("question");
+                        wr.WriteAttributeString("type", "essay");
+                        wr.WriteStartElement("name");
+                        wr.WriteElementString("text", "Exercise" + (currentExercise + 1).ToString());
+                        wr.WriteEndElement();
+                        wr.WriteStartElement("questiontext");
+                        wr.WriteAttributeString("format", "html");
+                        wr.WriteStartElement("text");
+                        wr.WriteCData(ex.ExerciseTextHun);
+                        wr.WriteEndElement();
+                        wr.WriteEndElement();
+                        wr.WriteStartElement("generalfeedback");
+                        wr.WriteAttributeString("format", "html");
+                        wr.WriteStartElement("text");
+                        wr.WriteCData(ex.ExerciseTextSQL);
+                        wr.WriteEndElement();
+                        wr.WriteEndElement();
+                        wr.WriteElementString("responseformat", "plain");
+                        wr.WriteElementString("responserequired", "1");
+                        wr.WriteElementString("responsefieldlines", "3");
+                        wr.WriteEndElement();
+                    }
                     wr.WriteEndElement();
                     wr.WriteEndDocument();
                     wr.Close();
@@ -212,7 +252,26 @@ namespace dbe
                 MessageBox.Show("XML export was unsuccessful: " + ex.Message);
                 throw;
             }
-            
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (currentExercise > 0) currentExercise--;
+            else currentExercise = generatedExercises.Count - 1;
+            showExercise();
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            if (currentExercise < generatedExercises.Count - 1) currentExercise++;
+            else currentExercise = 0;
+            showExercise();
+        }
+
+        private void cbMarked_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbMarked.Checked) generatedExercises[currentExercise].Marked = true;
+            else generatedExercises[currentExercise].Marked = false;
         }
     }
 }
