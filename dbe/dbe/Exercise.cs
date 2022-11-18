@@ -15,6 +15,8 @@ namespace dbe
     {
         public string ExerciseTextHun { get; set; }
         public string ExerciseTextSQL { get; set; }
+        public bool Marked { get; set; }
+        public int ID { get; set; }
         protected readonly SqlConnection con;
         private int checkCount = 0;
         protected readonly List<FunctionTemplate> templates;
@@ -23,7 +25,7 @@ namespace dbe
         protected List<Column> usedColumns = new List<Column>();
         protected List<Table> activeTables = new List<Table>();
         protected string groupBy = "";
-        public bool Marked { get; set; }
+
 
         protected Exercise(ref List<Table> tables, ref SqlConnection con, ref List<FunctionTemplate> templates)
         {
@@ -319,7 +321,15 @@ namespace dbe
                 {
                     generateExercise();
                 }
-                whereColumn = availableColumns[rnd.Next(availableColumns.Count)];
+                try
+                {
+                    whereColumn = availableColumns[rnd.Next(availableColumns.Count)];
+                }
+                catch (Exception)
+                {
+                    generateExercise();
+                }
+                
                 SqlCommand cmd;
                 try
                 {

@@ -33,7 +33,7 @@ namespace dbe
         SqlCommand cmd;
         List<FunctionTemplate> templates = new List<FunctionTemplate>();
         List<Exercise> generatedExercises = new List<Exercise>();
-        int currentExercise = 0;
+        int exerciseNumber = 0;
 
         public Form1()
         {
@@ -47,6 +47,8 @@ namespace dbe
             getTables();
             getFunctionTemplates();
             fillDgv();
+
+
         }
         protected override void OnLoad(EventArgs e)
         {
@@ -108,7 +110,8 @@ namespace dbe
             {
                 if (table.name == tableName)
                 {
-                    dgvPos.DataSource = table.columns;
+                    //dgvPos.DataSource = table.columns;
+                    dgvTable.DataSource = table.columns;
                 }
             }
         }
@@ -126,6 +129,8 @@ namespace dbe
                 for (int i = 0; i < exerciseCount; i++)
                 {
                     generatedExercises.Add(new SingleTableEx(ref this.tables, ref con, ref templates));
+                    generatedExercises[generatedExercises.Count - 1].ID = exerciseNumber;
+                    exerciseNumber++;
                 }
             }
             if (cbFunctions.Checked)
@@ -133,6 +138,8 @@ namespace dbe
                 for (int i = 0; i < exerciseCount; i++)
                 {
                     generatedExercises.Add(new FunctionsEx(ref this.tables, ref con, ref templates));
+                    generatedExercises[generatedExercises.Count - 1].ID = exerciseNumber;
+                    exerciseNumber++;
                 }
             }
             if (cbAggrFunctions.Checked)
@@ -140,6 +147,8 @@ namespace dbe
                 for (int i = 0; i < exerciseCount; i++)
                 {
                     generatedExercises.Add(new AggregateFunctionEx(ref this.tables, ref con, ref templates));
+                    generatedExercises[generatedExercises.Count - 1].ID = exerciseNumber;
+                    exerciseNumber++;
                 }
             }
             if (cbMultiTable.Checked)
@@ -147,6 +156,8 @@ namespace dbe
                 for (int i = 0; i < exerciseCount; i++)
                 {
                     generatedExercises.Add(new MultiTableEx(ref this.tables, ref con, ref templates));
+                    generatedExercises[generatedExercises.Count - 1].ID = exerciseNumber;
+                    exerciseNumber++;
                 }
             }
             if (cbSetOperation.Checked)
@@ -154,24 +165,24 @@ namespace dbe
                 for (int i = 0; i < exerciseCount; i++)
                 {
                     generatedExercises.Add(new SetOperationEx(ref this.tables, ref con, ref templates));
+                    generatedExercises[generatedExercises.Count - 1].ID = exerciseNumber;
+                    exerciseNumber++;
                 }
             }
-            showExercise();
-        }
 
-        private void showExercise()
-        {
-            lblExNo.Text = (currentExercise + 1).ToString() + " / " + generatedExercises.Count.ToString();
-            cbMarked.Checked = (generatedExercises[currentExercise].Marked) ? true : false;
-            txtHun.Text = generatedExercises[currentExercise].getExerciseHun().Replace("\n", Environment.NewLine);
-            txtSql.Text = generatedExercises[currentExercise].getExerciseSql().Replace("\n", Environment.NewLine);
 
-            var select = generatedExercises[currentExercise].getExerciseSql();
-            var dataAdapter = new SqlDataAdapter(select, this.con);
-            var ds = new DataSet();
-            dataAdapter.Fill(ds);
-            dgvPos.ReadOnly = true;
-            dgvPos.DataSource = ds.Tables[0];
+            dgvEx.DataSource = generatedExercises;
+            dgvEx.Columns["Marked"].DisplayIndex = 0;
+            dgvEx.Columns["ID"].DisplayIndex = 1;
+            dgvEx.Columns["ExerciseTextHun"].DisplayIndex = 2;
+            dgvEx.Columns["ExerciseTextSQL"].DisplayIndex = 3;
+            dgvEx.Update();
+
+            if(generatedExercises.Count > 0)
+            {
+                txtHun.Text = generatedExercises[0].ExerciseTextHun;
+                txtSql.Text = generatedExercises[0].ExerciseTextSQL;
+            }
         }
 
         private void getFunctionTemplates()
@@ -217,23 +228,23 @@ namespace dbe
                 using (XmlWriter wr = XmlWriter.Create(filepath, settings))
                 {
                     wr.WriteStartElement("quiz");
-                    foreach (Exercise ex in generatedExercises)
+                    for(int i = 0; i < generatedExercises.Count; i++)
                     {
                         wr.WriteStartElement("question");
                         wr.WriteAttributeString("type", "essay");
                         wr.WriteStartElement("name");
-                        wr.WriteElementString("text", "Exercise" + (currentExercise + 1).ToString());
+                        wr.WriteElementString("text", "Exercise" + (i+1).ToString());
                         wr.WriteEndElement();
                         wr.WriteStartElement("questiontext");
                         wr.WriteAttributeString("format", "html");
                         wr.WriteStartElement("text");
-                        wr.WriteCData(ex.ExerciseTextHun);
+                        wr.WriteCData(generatedExercises[i].ExerciseTextHun);
                         wr.WriteEndElement();
                         wr.WriteEndElement();
                         wr.WriteStartElement("generalfeedback");
                         wr.WriteAttributeString("format", "html");
                         wr.WriteStartElement("text");
-                        wr.WriteCData(ex.ExerciseTextSQL);
+                        wr.WriteCData(generatedExercises[i].ExerciseTextSQL);
                         wr.WriteEndElement();
                         wr.WriteEndElement();
                         wr.WriteElementString("responseformat", "plain");
@@ -253,25 +264,13 @@ namespace dbe
                 throw;
             }
         }
-
-        private void button3_Click(object sender, EventArgs e)
+        private void dgvEx_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (currentExercise > 0) currentExercise--;
-            else currentExercise = generatedExercises.Count - 1;
-            showExercise();
+            int selectedExerciseID = Convert.ToInt32(dgvEx.Rows[e.RowIndex].Cells[3].Value);
+            Exercise selectedExercise = generatedExercises.Where(ex => ex.ID == selectedExerciseID).ToList()[0];
+            txtHun.Text = selectedExercise.ExerciseTextHun;
+            txtSql.Text = selectedExercise.ExerciseTextSQL;
         }
 
-        private void button2_Click_1(object sender, EventArgs e)
-        {
-            if (currentExercise < generatedExercises.Count - 1) currentExercise++;
-            else currentExercise = 0;
-            showExercise();
-        }
-
-        private void cbMarked_CheckedChanged(object sender, EventArgs e)
-        {
-            if (cbMarked.Checked) generatedExercises[currentExercise].Marked = true;
-            else generatedExercises[currentExercise].Marked = false;
-        }
     }
 }

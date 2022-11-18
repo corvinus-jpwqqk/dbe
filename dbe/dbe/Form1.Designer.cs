@@ -30,7 +30,6 @@ namespace dbe
         private void InitializeComponent()
         {
             this.lbTbl = new System.Windows.Forms.ListBox();
-            this.dgvPos = new System.Windows.Forms.DataGridView();
             this.button1 = new System.Windows.Forms.Button();
             this.txtHun = new System.Windows.Forms.TextBox();
             this.txtSql = new System.Windows.Forms.TextBox();
@@ -42,38 +41,33 @@ namespace dbe
             this.cbSetOperation = new System.Windows.Forms.CheckBox();
             this.nUDexCount = new System.Windows.Forms.NumericUpDown();
             this.lblExCount = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.cbMarked = new System.Windows.Forms.CheckBox();
-            this.lblExNo = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPos)).BeginInit();
+            this.tabDb = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.dgvTable = new System.Windows.Forms.DataGridView();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.dgvEx = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.nUDexCount)).BeginInit();
+            this.tabDb.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvTable)).BeginInit();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvEx)).BeginInit();
             this.SuspendLayout();
             // 
             // lbTbl
             // 
             this.lbTbl.FormattingEnabled = true;
             this.lbTbl.ItemHeight = 16;
-            this.lbTbl.Location = new System.Drawing.Point(13, 13);
+            this.lbTbl.Location = new System.Drawing.Point(6, 6);
             this.lbTbl.Name = "lbTbl";
-            this.lbTbl.Size = new System.Drawing.Size(160, 180);
+            this.lbTbl.Size = new System.Drawing.Size(160, 484);
             this.lbTbl.TabIndex = 0;
             this.lbTbl.SelectedIndexChanged += new System.EventHandler(this.lbTbl_SelectedIndexChanged);
             // 
-            // dgvPos
-            // 
-            this.dgvPos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPos.Location = new System.Drawing.Point(179, 13);
-            this.dgvPos.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.dgvPos.Name = "dgvPos";
-            this.dgvPos.RowHeadersWidth = 62;
-            this.dgvPos.RowTemplate.Height = 28;
-            this.dgvPos.Size = new System.Drawing.Size(773, 174);
-            this.dgvPos.TabIndex = 1;
-            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(14, 410);
+            this.button1.Location = new System.Drawing.Point(7, 217);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(141, 35);
@@ -84,13 +78,14 @@ namespace dbe
             // 
             // txtHun
             // 
-            this.txtHun.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtHun.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtHun.Location = new System.Drawing.Point(179, 191);
+            this.txtHun.Location = new System.Drawing.Point(173, 256);
             this.txtHun.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtHun.Multiline = true;
             this.txtHun.Name = "txtHun";
-            this.txtHun.Size = new System.Drawing.Size(375, 321);
+            this.txtHun.Size = new System.Drawing.Size(364, 245);
             this.txtHun.TabIndex = 3;
             // 
             // txtSql
@@ -98,16 +93,16 @@ namespace dbe
             this.txtSql.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSql.Location = new System.Drawing.Point(560, 191);
+            this.txtSql.Location = new System.Drawing.Point(543, 256);
             this.txtSql.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtSql.Multiline = true;
             this.txtSql.Name = "txtSql";
-            this.txtSql.Size = new System.Drawing.Size(392, 321);
+            this.txtSql.Size = new System.Drawing.Size(374, 245);
             this.txtSql.TabIndex = 4;
             // 
             // btnExport
             // 
-            this.btnExport.Location = new System.Drawing.Point(14, 513);
+            this.btnExport.Location = new System.Drawing.Point(9, 466);
             this.btnExport.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(141, 35);
@@ -119,7 +114,7 @@ namespace dbe
             // cbSingleTable
             // 
             this.cbSingleTable.AutoSize = true;
-            this.cbSingleTable.Location = new System.Drawing.Point(13, 210);
+            this.cbSingleTable.Location = new System.Drawing.Point(6, 17);
             this.cbSingleTable.Name = "cbSingleTable";
             this.cbSingleTable.Size = new System.Drawing.Size(109, 21);
             this.cbSingleTable.TabIndex = 6;
@@ -129,7 +124,7 @@ namespace dbe
             // cbFunctions
             // 
             this.cbFunctions.AutoSize = true;
-            this.cbFunctions.Location = new System.Drawing.Point(13, 237);
+            this.cbFunctions.Location = new System.Drawing.Point(6, 44);
             this.cbFunctions.Name = "cbFunctions";
             this.cbFunctions.Size = new System.Drawing.Size(91, 21);
             this.cbFunctions.TabIndex = 7;
@@ -139,7 +134,7 @@ namespace dbe
             // cbAggrFunctions
             // 
             this.cbAggrFunctions.AutoSize = true;
-            this.cbAggrFunctions.Location = new System.Drawing.Point(13, 264);
+            this.cbAggrFunctions.Location = new System.Drawing.Point(6, 71);
             this.cbAggrFunctions.Name = "cbAggrFunctions";
             this.cbAggrFunctions.Size = new System.Drawing.Size(161, 21);
             this.cbAggrFunctions.TabIndex = 8;
@@ -149,7 +144,7 @@ namespace dbe
             // cbMultiTable
             // 
             this.cbMultiTable.AutoSize = true;
-            this.cbMultiTable.Location = new System.Drawing.Point(13, 291);
+            this.cbMultiTable.Location = new System.Drawing.Point(6, 98);
             this.cbMultiTable.Name = "cbMultiTable";
             this.cbMultiTable.Size = new System.Drawing.Size(125, 21);
             this.cbMultiTable.TabIndex = 9;
@@ -159,7 +154,7 @@ namespace dbe
             // cbSetOperation
             // 
             this.cbSetOperation.AutoSize = true;
-            this.cbSetOperation.Location = new System.Drawing.Point(13, 318);
+            this.cbSetOperation.Location = new System.Drawing.Point(6, 125);
             this.cbSetOperation.Name = "cbSetOperation";
             this.cbSetOperation.Size = new System.Drawing.Size(125, 21);
             this.cbSetOperation.TabIndex = 10;
@@ -168,7 +163,7 @@ namespace dbe
             // 
             // nUDexCount
             // 
-            this.nUDexCount.Location = new System.Drawing.Point(14, 373);
+            this.nUDexCount.Location = new System.Drawing.Point(7, 180);
             this.nUDexCount.Name = "nUDexCount";
             this.nUDexCount.Size = new System.Drawing.Size(120, 22);
             this.nUDexCount.TabIndex = 11;
@@ -181,88 +176,127 @@ namespace dbe
             // lblExCount
             // 
             this.lblExCount.AutoSize = true;
-            this.lblExCount.Location = new System.Drawing.Point(13, 353);
+            this.lblExCount.Location = new System.Drawing.Point(6, 160);
             this.lblExCount.Name = "lblExCount";
             this.lblExCount.Size = new System.Drawing.Size(119, 17);
             this.lblExCount.TabIndex = 12;
             this.lblExCount.Text = "Feladatok száma:";
             // 
-            // button2
+            // tabDb
             // 
-            this.button2.Location = new System.Drawing.Point(560, 517);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(39, 34);
-            this.button2.TabIndex = 13;
-            this.button2.Text = ">";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click_1);
+            this.tabDb.AccessibleName = "";
+            this.tabDb.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabDb.Controls.Add(this.tabPage1);
+            this.tabDb.Controls.Add(this.tabPage2);
+            this.tabDb.Controls.Add(this.tabPage3);
+            this.tabDb.Location = new System.Drawing.Point(12, 12);
+            this.tabDb.Name = "tabDb";
+            this.tabDb.SelectedIndex = 0;
+            this.tabDb.Size = new System.Drawing.Size(931, 535);
+            this.tabDb.TabIndex = 18;
             // 
-            // button3
+            // tabPage1
             // 
-            this.button3.Location = new System.Drawing.Point(515, 517);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(39, 34);
-            this.button3.TabIndex = 14;
-            this.button3.Text = "<";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.tabPage1.Location = new System.Drawing.Point(4, 25);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(923, 506);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // cbMarked
+            // tabPage2
             // 
-            this.cbMarked.AutoSize = true;
-            this.cbMarked.Location = new System.Drawing.Point(605, 525);
-            this.cbMarked.Name = "cbMarked";
-            this.cbMarked.Size = new System.Drawing.Size(125, 21);
-            this.cbMarked.TabIndex = 15;
-            this.cbMarked.Text = "Mark for export";
-            this.cbMarked.UseVisualStyleBackColor = true;
-            this.cbMarked.CheckedChanged += new System.EventHandler(this.cbMarked_CheckedChanged);
+            this.tabPage2.Controls.Add(this.dgvTable);
+            this.tabPage2.Controls.Add(this.lbTbl);
+            this.tabPage2.Location = new System.Drawing.Point(4, 25);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(923, 506);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // lblExNo
+            // dgvTable
             // 
-            this.lblExNo.AutoSize = true;
-            this.lblExNo.Location = new System.Drawing.Point(447, 526);
-            this.lblExNo.Name = "lblExNo";
-            this.lblExNo.Size = new System.Drawing.Size(46, 17);
-            this.lblExNo.TabIndex = 16;
-            this.lblExNo.Text = "label1";
+            this.dgvTable.AllowUserToAddRows = false;
+            this.dgvTable.AllowUserToDeleteRows = false;
+            this.dgvTable.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvTable.Location = new System.Drawing.Point(172, 6);
+            this.dgvTable.MultiSelect = false;
+            this.dgvTable.Name = "dgvTable";
+            this.dgvTable.ReadOnly = true;
+            this.dgvTable.RowHeadersWidth = 51;
+            this.dgvTable.RowTemplate.Height = 24;
+            this.dgvTable.Size = new System.Drawing.Size(745, 494);
+            this.dgvTable.TabIndex = 1;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.dgvEx);
+            this.tabPage3.Controls.Add(this.cbSingleTable);
+            this.tabPage3.Controls.Add(this.button1);
+            this.tabPage3.Controls.Add(this.btnExport);
+            this.tabPage3.Controls.Add(this.cbFunctions);
+            this.tabPage3.Controls.Add(this.cbAggrFunctions);
+            this.tabPage3.Controls.Add(this.txtHun);
+            this.tabPage3.Controls.Add(this.txtSql);
+            this.tabPage3.Controls.Add(this.lblExCount);
+            this.tabPage3.Controls.Add(this.cbMultiTable);
+            this.tabPage3.Controls.Add(this.nUDexCount);
+            this.tabPage3.Controls.Add(this.cbSetOperation);
+            this.tabPage3.Location = new System.Drawing.Point(4, 25);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(923, 506);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "tabPage3";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // dgvEx
+            // 
+            this.dgvEx.AllowUserToAddRows = false;
+            this.dgvEx.AllowUserToDeleteRows = false;
+            this.dgvEx.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvEx.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvEx.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvEx.Location = new System.Drawing.Point(173, 17);
+            this.dgvEx.MultiSelect = false;
+            this.dgvEx.Name = "dgvEx";
+            this.dgvEx.RowHeadersWidth = 51;
+            this.dgvEx.RowTemplate.Height = 24;
+            this.dgvEx.Size = new System.Drawing.Size(744, 235);
+            this.dgvEx.TabIndex = 18;
+            this.dgvEx.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvEx_CellClick);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(955, 559);
-            this.Controls.Add(this.lblExNo);
-            this.Controls.Add(this.cbMarked);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.lblExCount);
-            this.Controls.Add(this.nUDexCount);
-            this.Controls.Add(this.cbSetOperation);
-            this.Controls.Add(this.cbMultiTable);
-            this.Controls.Add(this.cbAggrFunctions);
-            this.Controls.Add(this.cbFunctions);
-            this.Controls.Add(this.cbSingleTable);
-            this.Controls.Add(this.btnExport);
-            this.Controls.Add(this.txtSql);
-            this.Controls.Add(this.txtHun);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.dgvPos);
-            this.Controls.Add(this.lbTbl);
+            this.Controls.Add(this.tabDb);
             this.Name = "Form1";
-            this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPos)).EndInit();
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             ((System.ComponentModel.ISupportInitialize)(this.nUDexCount)).EndInit();
+            this.tabDb.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvTable)).EndInit();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvEx)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.ListBox lbTbl;
-        private System.Windows.Forms.DataGridView dgvPos;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox txtHun;
         private System.Windows.Forms.TextBox txtSql;
@@ -274,10 +308,12 @@ namespace dbe
         private System.Windows.Forms.CheckBox cbSetOperation;
         private System.Windows.Forms.NumericUpDown nUDexCount;
         private System.Windows.Forms.Label lblExCount;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.CheckBox cbMarked;
-        private System.Windows.Forms.Label lblExNo;
+        private System.Windows.Forms.TabControl tabDb;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.DataGridView dgvEx;
+        private System.Windows.Forms.DataGridView dgvTable;
     }
 }
 
