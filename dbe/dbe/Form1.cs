@@ -57,7 +57,6 @@ namespace dbe
                 if (f.ShowDialog() == DialogResult.OK)
                 {
                     this.connectionString = f.connString;
-                    Console.WriteLine("Received ConnectionString: " + connectionString);
                     setupForm();
                 }
                 else
@@ -110,7 +109,6 @@ namespace dbe
             {
                 if (table.name == tableName)
                 {
-                    //dgvPos.DataSource = table.columns;
                     dgvTable.DataSource = table.columns;
                 }
             }
@@ -180,8 +178,8 @@ namespace dbe
 
             if(generatedExercises.Count > 0)
             {
-                txtHun.Text = generatedExercises[0].ExerciseTextHun;
-                txtSql.Text = generatedExercises[0].ExerciseTextSQL;
+                txtHun.Text = getOutputString(generatedExercises[0].ExerciseTextHun);
+                txtSql.Text = getOutputString(generatedExercises[0].ExerciseTextSQL);
             }
         }
 
@@ -210,7 +208,7 @@ namespace dbe
             sfd.FileName = "exercise.xml";
             sfd.ShowDialog();
 
-            if(sfd.FileName != "")
+            if (sfd.FileName != "")
             {
                 genXML(sfd.FileName);
             }
@@ -230,27 +228,30 @@ namespace dbe
                     wr.WriteStartElement("quiz");
                     for(int i = 0; i < generatedExercises.Count; i++)
                     {
-                        wr.WriteStartElement("question");
-                        wr.WriteAttributeString("type", "essay");
-                        wr.WriteStartElement("name");
-                        wr.WriteElementString("text", "Exercise" + (i+1).ToString());
-                        wr.WriteEndElement();
-                        wr.WriteStartElement("questiontext");
-                        wr.WriteAttributeString("format", "html");
-                        wr.WriteStartElement("text");
-                        wr.WriteCData(generatedExercises[i].ExerciseTextHun);
-                        wr.WriteEndElement();
-                        wr.WriteEndElement();
-                        wr.WriteStartElement("generalfeedback");
-                        wr.WriteAttributeString("format", "html");
-                        wr.WriteStartElement("text");
-                        wr.WriteCData(generatedExercises[i].ExerciseTextSQL);
-                        wr.WriteEndElement();
-                        wr.WriteEndElement();
-                        wr.WriteElementString("responseformat", "plain");
-                        wr.WriteElementString("responserequired", "1");
-                        wr.WriteElementString("responsefieldlines", "3");
-                        wr.WriteEndElement();
+                        if (generatedExercises[i].Marked)
+                        {
+                            wr.WriteStartElement("question");
+                            wr.WriteAttributeString("type", "essay");
+                            wr.WriteStartElement("name");
+                            wr.WriteElementString("text", "Exercise" + (i + 1).ToString());
+                            wr.WriteEndElement();
+                            wr.WriteStartElement("questiontext");
+                            wr.WriteAttributeString("format", "html");
+                            wr.WriteStartElement("text");
+                            wr.WriteCData(generatedExercises[i].ExerciseTextHun);
+                            wr.WriteEndElement();
+                            wr.WriteEndElement();
+                            wr.WriteStartElement("generalfeedback");
+                            wr.WriteAttributeString("format", "html");
+                            wr.WriteStartElement("text");
+                            wr.WriteCData(generatedExercises[i].ExerciseTextSQL);
+                            wr.WriteEndElement();
+                            wr.WriteEndElement();
+                            wr.WriteElementString("responseformat", "plain");
+                            wr.WriteElementString("responserequired", "1");
+                            wr.WriteElementString("responsefieldlines", "3");
+                            wr.WriteEndElement();
+                        }
                     }
                     wr.WriteEndElement();
                     wr.WriteEndDocument();
@@ -268,9 +269,12 @@ namespace dbe
         {
             int selectedExerciseID = Convert.ToInt32(dgvEx.Rows[e.RowIndex].Cells[3].Value);
             Exercise selectedExercise = generatedExercises.Where(ex => ex.ID == selectedExerciseID).ToList()[0];
-            txtHun.Text = selectedExercise.ExerciseTextHun;
-            txtSql.Text = selectedExercise.ExerciseTextSQL;
+            txtHun.Text = getOutputString(selectedExercise.ExerciseTextHun);
+            txtSql.Text = getOutputString(selectedExercise.ExerciseTextSQL);
         }
-
+        private string getOutputString(string s)
+        {
+            return s.Replace("\n", Environment.NewLine);
+        }
     }
 }
