@@ -27,6 +27,7 @@ namespace dbe
     }
     public partial class Form1 : Form
     {
+        string connectionStringBase;
         string connectionString;
         List<Table> tables = new List<Table>();
         SqlConnection con;
@@ -34,6 +35,7 @@ namespace dbe
         List<FunctionTemplate> templates = new List<FunctionTemplate>();
         List<Exercise> generatedExercises = new List<Exercise>();
         int exerciseNumber = 0;
+        private List<string> databases = new List<string>();
 
         public Form1()
         {
@@ -42,13 +44,23 @@ namespace dbe
 
         private void setupForm()
         {
-            con = new SqlConnection(this.connectionString);
-            con.Open();
-            getTables();
+            var exTab = (Control)(tabMain.TabPages[1]);
+            exTab.Enabled = false;
             getFunctionTemplates();
-            fillDgv();
-
-
+            con = new SqlConnection(this.connectionStringBase);
+            con.Open();
+            using (SqlCommand cmd = new SqlCommand("SELECT name FROM sys.databases WHERE owner_sid <> 0x01", con))
+            {
+                using (IDataReader rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        this.databases.Add(rdr[0].ToString());
+                    }
+                }
+            }
+            cbDb.DataSource = this.databases;
+            con.Close();
         }
         protected override void OnLoad(EventArgs e)
         {
@@ -56,7 +68,7 @@ namespace dbe
             {
                 if (f.ShowDialog() == DialogResult.OK)
                 {
-                    this.connectionString = f.connString;
+                    this.connectionStringBase = f.connString;
                     setupForm();
                 }
                 else
@@ -97,14 +109,15 @@ namespace dbe
                 table.getRelationShips(ref con);
                 table.getDescriptions(ref descriptions);
             }
-            lbTbl.DataSource = this.tables;
+            BindingSource source = new BindingSource();
+            source.DataSource = this.tables;
+            lbTbl.DataSource = source;
             lbTbl.DisplayMember = "Name";
+            lbTbl.Refresh();
         }
         private void fillDgv()
         {
             string tableName = ((Table)(this.lbTbl.SelectedItem)).name;
-
-
             foreach (Table table in this.tables)
             {
                 if (table.name == tableName)
@@ -167,9 +180,9 @@ namespace dbe
                     exerciseNumber++;
                 }
             }
-
-
-            dgvEx.DataSource = generatedExercises;
+            BindingSource source = new BindingSource();
+            source.DataSource = generatedExercises;
+            dgvEx.DataSource = source;
             dgvEx.Columns["Marked"].DisplayIndex = 0;
             dgvEx.Columns["ID"].DisplayIndex = 1;
             dgvEx.Columns["ExerciseTextHun"].DisplayIndex = 2;
@@ -267,14 +280,53 @@ namespace dbe
         }
         private void dgvEx_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            int selectedExerciseID = Convert.ToInt32(dgvEx.Rows[e.RowIndex].Cells[3].Value);
-            Exercise selectedExercise = generatedExercises.Where(ex => ex.ID == selectedExerciseID).ToList()[0];
-            txtHun.Text = getOutputString(selectedExercise.ExerciseTextHun);
-            txtSql.Text = getOutputString(selectedExercise.ExerciseTextSQL);
+            try
+            {
+                int selectedExerciseID = Convert.ToInt32(dgvEx.Rows[e.RowIndex].Cells[3].Value);
+                Exercise selectedExercise = generatedExercises.Where(ex => ex.ID == selectedExerciseID).ToList()[0];
+                txtHun.Text = getOutputString(selectedExercise.ExerciseTextHun);
+                txtSql.Text = getOutputString(selectedExercise.ExerciseTextSQL);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            
         }
         private string getOutputString(string s)
         {
             return s.Replace("\n", Environment.NewLine);
+        }
+
+        private void btnOK_Click(object sender, EventArgs e)
+        {
+            this.tables.Clear();
+            try
+            {
+                con.Close();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Connection is already closed");
+            }
+            this.connectionString = this.connectionStringBase + ";Database=" + cbDb.SelectedItem.ToString();
+            Cursor.Current = Cursors.WaitCursor;
+            con.ConnectionString = this.connectionString;
+            try
+            {
+                con.Open();
+                Cursor.Current = Cursors.Default;
+                getTables();
+                fillDgv();
+                var exTab = (Control)(tabMain.TabPages[1]);
+                exTab.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                Cursor.Current = Cursors.Default;
+                MessageBox.Show("Error while connecting: " + ex.Message);
+                return;
+            }
         }
     }
 }

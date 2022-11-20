@@ -29,7 +29,6 @@ namespace dbe
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnLogin = new System.Windows.Forms.Button();
             this.tbSrv = new System.Windows.Forms.TextBox();
@@ -38,24 +37,12 @@ namespace dbe
             this.lblUsr = new System.Windows.Forms.Label();
             this.lblPwd = new System.Windows.Forms.Label();
             this.tbPwd = new System.Windows.Forms.TextBox();
-            this.cbDb = new System.Windows.Forms.ComboBox();
-            this.lblDb = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
-            // btnOK
-            // 
-            this.btnOK.Location = new System.Drawing.Point(56, 352);
-            this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(75, 35);
-            this.btnOK.TabIndex = 6;
-            this.btnOK.Text = "Connect";
-            this.btnOK.UseVisualStyleBackColor = true;
-            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(268, 352);
+            this.btnCancel.Location = new System.Drawing.Point(190, 222);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 35);
             this.btnCancel.TabIndex = 7;
@@ -64,7 +51,7 @@ namespace dbe
             // 
             // btnLogin
             // 
-            this.btnLogin.Location = new System.Drawing.Point(157, 227);
+            this.btnLogin.Location = new System.Drawing.Point(42, 224);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(75, 31);
             this.btnLogin.TabIndex = 4;
@@ -74,7 +61,7 @@ namespace dbe
             // 
             // tbSrv
             // 
-            this.tbSrv.Location = new System.Drawing.Point(56, 53);
+            this.tbSrv.Location = new System.Drawing.Point(12, 38);
             this.tbSrv.Name = "tbSrv";
             this.tbSrv.Size = new System.Drawing.Size(287, 22);
             this.tbSrv.TabIndex = 1;
@@ -82,7 +69,7 @@ namespace dbe
             // 
             // tbUsr
             // 
-            this.tbUsr.Location = new System.Drawing.Point(56, 116);
+            this.tbUsr.Location = new System.Drawing.Point(12, 101);
             this.tbUsr.Name = "tbUsr";
             this.tbUsr.Size = new System.Drawing.Size(287, 22);
             this.tbUsr.TabIndex = 2;
@@ -91,7 +78,7 @@ namespace dbe
             // lblSrv
             // 
             this.lblSrv.AutoSize = true;
-            this.lblSrv.Location = new System.Drawing.Point(56, 33);
+            this.lblSrv.Location = new System.Drawing.Point(12, 18);
             this.lblSrv.Name = "lblSrv";
             this.lblSrv.Size = new System.Drawing.Size(105, 17);
             this.lblSrv.TabIndex = 5;
@@ -100,7 +87,7 @@ namespace dbe
             // lblUsr
             // 
             this.lblUsr.AutoSize = true;
-            this.lblUsr.Location = new System.Drawing.Point(56, 96);
+            this.lblUsr.Location = new System.Drawing.Point(12, 81);
             this.lblUsr.Name = "lblUsr";
             this.lblUsr.Size = new System.Drawing.Size(73, 17);
             this.lblUsr.TabIndex = 6;
@@ -109,7 +96,7 @@ namespace dbe
             // lblPwd
             // 
             this.lblPwd.AutoSize = true;
-            this.lblPwd.Location = new System.Drawing.Point(56, 162);
+            this.lblPwd.Location = new System.Drawing.Point(12, 147);
             this.lblPwd.Name = "lblPwd";
             this.lblPwd.Size = new System.Drawing.Size(69, 17);
             this.lblPwd.TabIndex = 8;
@@ -117,37 +104,17 @@ namespace dbe
             // 
             // tbPwd
             // 
-            this.tbPwd.Location = new System.Drawing.Point(56, 182);
+            this.tbPwd.Location = new System.Drawing.Point(12, 167);
             this.tbPwd.Name = "tbPwd";
             this.tbPwd.PasswordChar = '*';
             this.tbPwd.Size = new System.Drawing.Size(287, 22);
             this.tbPwd.TabIndex = 3;
             // 
-            // cbDb
-            // 
-            this.cbDb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbDb.FormattingEnabled = true;
-            this.cbDb.Location = new System.Drawing.Point(59, 294);
-            this.cbDb.Name = "cbDb";
-            this.cbDb.Size = new System.Drawing.Size(284, 24);
-            this.cbDb.TabIndex = 5;
-            // 
-            // lblDb
-            // 
-            this.lblDb.AutoSize = true;
-            this.lblDb.Location = new System.Drawing.Point(56, 274);
-            this.lblDb.Name = "lblDb";
-            this.lblDb.Size = new System.Drawing.Size(69, 17);
-            this.lblDb.TabIndex = 10;
-            this.lblDb.Text = "Database";
-            // 
             // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(396, 399);
-            this.Controls.Add(this.lblDb);
-            this.Controls.Add(this.cbDb);
+            this.ClientSize = new System.Drawing.Size(306, 298);
             this.Controls.Add(this.lblPwd);
             this.Controls.Add(this.tbPwd);
             this.Controls.Add(this.lblUsr);
@@ -156,7 +123,6 @@ namespace dbe
             this.Controls.Add(this.tbSrv);
             this.Controls.Add(this.btnLogin);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnOK);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "LoginForm";
@@ -167,8 +133,6 @@ namespace dbe
         }
 
         #endregion
-
-        private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.TextBox tbSrv;
@@ -177,7 +141,5 @@ namespace dbe
         private System.Windows.Forms.Label lblUsr;
         private System.Windows.Forms.Label lblPwd;
         private System.Windows.Forms.TextBox tbPwd;
-        private System.Windows.Forms.ComboBox cbDb;
-        private System.Windows.Forms.Label lblDb;
     }
 }
